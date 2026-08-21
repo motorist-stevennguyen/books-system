@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  role: one
+  permission: one
+  granted_at: 2026-08-21 11:54:52
+
+two:
+  role: two
+  permission: two
+  granted_at: 2026-08-21 11:54:52
