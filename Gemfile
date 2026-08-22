@@ -1,6 +1,10 @@
 source "https://rubygems.org"
 
 gem "rails_cursor_pagination"
+
+gem "bcrypt"
+gem "jwt"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3", ">= 8.1.3.1"
 # Use mysql as the database for Active Record

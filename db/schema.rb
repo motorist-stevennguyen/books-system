@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_21_045755) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -42,6 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_045755) do
 
   create_table "books", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "author_id", null: false
+    t.string "code"
     t.string "cover_url"
     t.datetime "created_at", null: false
     t.text "description"
@@ -52,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_045755) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_on_author_id"
+    t.index ["code"], name: "index_books_on_code", unique: true
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -83,7 +85,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_045755) do
   create_table "roles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
+    t.boolean "enable"
     t.string "name"
+    t.string "slug"
     t.datetime "updated_at", null: false
   end
 
