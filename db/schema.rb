@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_070652) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -72,6 +72,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "refresh_tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "crypted_token"
+    t.datetime "expires_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_refresh_tokens_on_user_id"
+  end
+
   create_table "role_permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.timestamp "granted_at"
@@ -107,6 +116,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
   add_foreign_key "book_views", "books"
   add_foreign_key "book_views", "users"
   add_foreign_key "books", "authors"
+  add_foreign_key "refresh_tokens", "users"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "role_permissions", "roles"
   add_foreign_key "users", "roles"
