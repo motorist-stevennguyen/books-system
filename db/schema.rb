@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_23_070652) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_24_090600) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_070652) do
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_on_author_id"
     t.index ["code"], name: "index_books_on_code", unique: true
+    t.index ["title", "description"], name: "index_books_on_title_and_description", type: :fulltext
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|

@@ -12,7 +12,11 @@ User.destroy_all
 RolePermission.destroy_all
 Role.destroy_all
 Permission.destroy_all
-
+BookCategory.destroy_all
+Book.destroy_all
+Author.destroy_all
+BookView.destroy_all
+Category.destroy_all
 
 admin_role_id = 0
 user_role_id = 0
@@ -33,25 +37,25 @@ end
 
 User.create(email: "stevennguyen@motorist.com", password: "123Steven", username: "stevennguyen", role_id: admin_role_id)
 perms = [
-  { resource: "user", action: PermissionEnum::CREATE, role_id: user_role_id },
-  { resource: "user", action: PermissionEnum::UPDATE, role_id: admin_role_id },
-  { resource: "user", action: PermissionEnum::READ, role_id: user_role_id },
-  { resource: "user", action: PermissionEnum::DELETE, role_id: user_role_id },
+  { resource: "user", action: PermissionConst::CREATE, role_id: user_role_id },
+  { resource: "user", action: PermissionConst::UPDATE, role_id: admin_role_id },
+  { resource: "user", action: PermissionConst::READ, role_id: user_role_id },
+  { resource: "user", action: PermissionConst::DELETE, role_id: user_role_id },
 
-  { resource: "role", action: PermissionEnum::CREATE, role_id: admin_role_id },
-  { resource: "role", action: PermissionEnum::UPDATE, role_id: admin_role_id },
-  { resource: "role", action: PermissionEnum::READ, role_id: admin_role_id },
-  { resource: "role", action: PermissionEnum::DELETE, role_id: admin_role_id },
+  { resource: "role", action: PermissionConst::CREATE, role_id: admin_role_id },
+  { resource: "role", action: PermissionConst::UPDATE, role_id: admin_role_id },
+  { resource: "role", action: PermissionConst::READ, role_id: admin_role_id },
+  { resource: "role", action: PermissionConst::DELETE, role_id: admin_role_id },
 
-  { resource: "permission", action: PermissionEnum::CREATE, role_id: admin_role_id },
-  { resource: "permission", action: PermissionEnum::UPDATE, role_id: admin_role_id },
-  { resource: "permission", action: PermissionEnum::READ, role_id: admin_role_id },
-  { resource: "permission", action: PermissionEnum::DELETE, role_id: admin_role_id },
+  { resource: "permission", action: PermissionConst::CREATE, role_id: admin_role_id },
+  { resource: "permission", action: PermissionConst::UPDATE, role_id: admin_role_id },
+  { resource: "permission", action: PermissionConst::READ, role_id: admin_role_id },
+  { resource: "permission", action: PermissionConst::DELETE, role_id: admin_role_id },
 
-  { resource: "book", action: PermissionEnum::CREATE, role_id: admin_role_id },
-  { resource: "book", action: PermissionEnum::UPDATE, role_id: admin_role_id },
-  { resource: "book", action: PermissionEnum::READ, role_id: admin_role_id },
-  { resource: "book", action: PermissionEnum::DELETE, role_id: admin_role_id }
+  { resource: "book", action: PermissionConst::CREATE, role_id: admin_role_id },
+  { resource: "book", action: PermissionConst::UPDATE, role_id: admin_role_id },
+  { resource: "book", action: PermissionConst::READ, role_id: admin_role_id },
+  { resource: "book", action: PermissionConst::DELETE, role_id: admin_role_id }
 ]
 
 perms.each do |resource|
@@ -62,3 +66,89 @@ end
 perms.each do |perm|
    RolePermission.create(role_id: perm[:role_id], permission_id: perm[:id])
 end
+
+
+timestamp = Time.current
+
+category_names = [
+  'Science Fiction', 'Fantasy', 'Mystery', 'Non-Fiction',
+  'Biography', 'History', 'Romance', 'Thriller', 'Self-Help'
+]
+
+categories_data = category_names.map do |name|
+  {
+    name: name,
+    slug: name.parameterize,
+    description: Faker::Lorem.sentence(word_count: 10),
+    created_at: timestamp,
+    updated_at: timestamp
+  }
+end
+
+Category.insert_all(categories_data)
+category_ids = Category.pluck(:id)
+
+authors_data = Array.new(20) do
+  {
+    name: Faker::Book.author,
+    bio: Faker::Lorem.paragraph(sentence_count: 3),
+    birth_date: Faker::Date.birthday(min_age: 25, max_age: 85),
+    nationality: Faker::Nation.nationality,
+    created_at: timestamp,
+    updated_at: timestamp
+  }
+end
+
+Author.insert_all(authors_data)
+author_ids = Author.pluck(:id)
+
+statuses = %w[draft published archived]
+languages = %w[English Spanish French German Japanese]
+
+books_data = Array.new(50) do
+  {
+    author_id: author_ids.sample,
+    title: Faker::Book.title,
+    code: "BOOK-#{Faker::Alphanumeric.alphanumeric(number: 8).upcase}",
+    description: Faker::Lorem.paragraph(sentence_count: 4),
+    language: languages.sample,
+    pages: rand(100..900),
+    published_date: Faker::Date.between(from: 20.years.ago, to: Date.today),
+    status: statuses.sample,
+    cover_url: Faker::LoremFlickr.image(size: "300x400"),
+    created_at: timestamp,
+    updated_at: timestamp
+  }
+end
+
+Book.insert_all(books_data)
+book_ids = Book.pluck(:id)
+
+book_categories_data = []
+
+book_ids.each do |b_id|
+  assigned_categories = category_ids.sample(rand(1..3))
+  assigned_categories.each do |c_id|
+    book_categories_data << {
+      book_id: b_id,
+      category_id: c_id,
+      assigned_at: Faker::Time.between(from: 1.year.ago, to: Time.current),
+      created_at: timestamp,
+      updated_at: timestamp
+    }
+  end
+end
+
+BookCategory.insert_all(book_categories_data)
+
+# book_views_data = Array.new(150) do
+#   {
+#     book_id: book_ids.sample,
+#     user_id: rand(1..50), # Assumes mock user IDs 1 to 50
+#     viewed_at: Faker::Time.between(from: 6.months.ago, to: Time.current),
+#     created_at: timestamp,
+#     updated_at: timestamp
+#   }
+# end
+
+# BookView.insert_all(book_views_data)

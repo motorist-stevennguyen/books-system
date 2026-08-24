@@ -50,6 +50,12 @@ Rails.application.configure do
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
+  config.datetime_format = "%Y-%m-%d %H:%M:%S"
+  config.logger = ActiveSupport::Logger.new("log/#{Rails.env}.log")
+  config.logger.formatter = proc do |severity, time, progname, msg|
+    puts "[#{severity}] #{time} #{msg} #{progname}"
+  end
+
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
 

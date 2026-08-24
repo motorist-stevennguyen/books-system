@@ -1,12 +1,23 @@
 module Api
   module V1
     class UsersController < Api::V1::ApiV1Controller
-      before_action :set_user, only: [:show, :update, :destroy]
+      # before_action :set_user, only: [ :show, :update, :destroy, :profile ]
 
       # GET /users
       def index
         @users = User.all
         render json: @users
+      end
+
+      def history
+        authorize @current_user
+        viewed_books = BookView.load_book.scp_find_by_uid(@current_user.id)
+        render json: viewed_books.to_a, scope: { include: [ :book ] }
+      end
+
+      def profile
+        user = User.find_by_email_or_username(val: current_user[:username], cacheable: true)
+        render json: user
       end
 
       # GET /users/:id

@@ -1,4 +1,4 @@
-module PermissionEnum
+module PermissionConst
   CREATE = "create"
   UPDATE = "update"
   DELETE = "delete"

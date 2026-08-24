@@ -4,6 +4,7 @@ module ErrorMessages
   UNAUTHORIZED_ACCESS = "400|Unauthorized access"
   FORBIDDEN_ACTION = "400|Forbidden action"
   RESOURCE_NOT_FOUND = "400|Resource not found"
+  RESOURCE_NOT_AVAILABLE = "400|Resource not available"
   VALIDATION_FAILED = "400|Validation failed"
   INVALID_TOKEN = "400|Invalid token"
   AT_IS_MISSING = "400|Access token is missing"

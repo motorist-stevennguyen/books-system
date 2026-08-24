@@ -15,7 +15,7 @@ module Api
         user = User.find_by_email_or_username(val: val.downcase, cacheable: true)
 
         unless user&.authenticate(params[:password])
-          return render json: { error: 'Invalid email or password' }, status: :unauthorized
+          return render json: { error: "Invalid email or password" }, status: :unauthorized
         end
 
         access_token, refresh_token = self.class.create_tokens(user, login_with)
@@ -25,7 +25,7 @@ module Api
       # POST /api/v1/auth/refresh
       def refresh
         user = User.find_by(id: params[:user_id])
-        return render json: { error: 'Invalid user' }, status: :unauthorized unless user
+        return render json: { error: "Invalid user" }, status: :unauthorized unless user
 
         new_access_token, new_refresh_token = self.class.refresh!(
           refresh_token: params[:refresh_token],
