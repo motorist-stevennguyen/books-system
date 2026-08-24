@@ -13,6 +13,6 @@ module DateTimeSerializer
   end
 
   def datetime(val)
-    val.in_time_zone("Hanoi").strftime("%Y-%m-%d %H:%M:%S")
+    val.in_time_zone("Hanoi").strftime("%Y-%m-%d %H:%M:%S") if val.present?
   end
 end

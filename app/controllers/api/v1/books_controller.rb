@@ -1,7 +1,7 @@
 module Api
   module V1
     class BooksController < Api::V1::ApiV1Controller
-      after_action :verify_authorized, excep: [ :index ]
+      after_action :verify_authorized, except: [ :index ]
 
       before_action :set_book, only: [ :show ]
 
@@ -10,12 +10,8 @@ module Api
 
       def show
         authorize @book
-        # categories = Book.find_book_categories(@book.id)
-        # categories = BookCategory.find_categories_by_book(@book.id)
         # UserReadBookJobs.perform_later(@current_user[:id], @book.id)
-        puts "Categories: ", @book
-
-        render json: @book
+        render json: @book, scope: {categories: JSON.parse(@book.categories), include: [:author]}
       end
 
       private
@@ -25,7 +21,7 @@ module Api
 
       def set_book
         id = params[:id]
-        @book = Book.eager_load(:author).find_full_book(id)
+        @book = Book.eager_load(:author).find_by_id(id)
       end
     end
   end

@@ -6,29 +6,23 @@ module Authenticator
     def authenticated(headers:, at: nil)
       token = at.presence || extract_header_token(headers: headers)
       raise BusinessException.new(ErrorMessages::AT_IS_MISSING) unless token.present?
-
-      decoded_token = decode!(token)
-      raise BusinessException.new(ErrorMessages::INVALID_TOKEN) if decoded_token.nil?
-
-      user = token_validate(decoded_token)
-      raise BusinessException.new(ErrorMessages::UNAUTHORIZED_ACCESS) unless user.present?
-
-      [user, decoded_token]
+      token_validate(token)
     end
 
-    def token_validate(decoded_token)
-      raise BusinessException.new(ErrorMessages::INVALID_TOKEN) unless decoded_token[:jti].present? && decoded_token[:uid].present?
-      raise BusinessException.new(ErrorMessages::UNAUTHORIZED_ACCESS) if blacklisted?(jti: decoded_token[:jti])
+    def token_validate(rt)
+      raise BusinessException.new(ErrorMessages::RT_IS_MISSING) if rt.blank?
 
-      User.find_by_email_or_username(val: decoded_token[:"#{decoded_token[:start_session_by]}"], cacheable: true)
+      existing_rt = Token.find_by_token(rt)
+      raise BusinessException.new(ErrorMessages::INVALID_TOKEN) unless existing_rt.present?
+      User.find_by_id(id: existing_rt.user_id)
     end
 
     def extract_header_token(headers:)
       headers["Authorization"]&.split("Bearer ")&.last
     end
 
-    def logout!(user:, decoded_token:)
-      revoke(decoded_token: decoded_token, user: user)
+    def logout!(user:)
+      revoke(user: user)
     end
   end
 end

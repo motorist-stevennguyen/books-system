@@ -13,10 +13,10 @@ module Api
 
       private
 
-      attr_reader :current_user, :decoded_token
+      attr_reader :current_user
 
       def authenticated_request
-        @current_user, @decoded_token = self.class.authenticated(headers: request.headers, at: request.headers["Authorization"]&.split(" ")&.last)
+        @current_user = self.class.authenticated(headers: request.headers, at: request.headers["Authorization"]&.split(" ")&.last)
         Rails.logger.info("[#{self.class}] #{current_user[:uid]} #{current_user[:email]}")
       end
     end

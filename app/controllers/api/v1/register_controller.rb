@@ -6,8 +6,6 @@ module Api
       def create
         @user = User.new(register_params)
         if @user.save!
-          payload = { uid: @user.id, email: @user.email  }
-          token = self.class.encode(payload)
           render json: @user, status: :created
         end
       rescue => e

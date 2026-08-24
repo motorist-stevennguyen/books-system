@@ -4,13 +4,14 @@ class User < ApplicationRecord
 
   belongs_to :role
 
-  scope :scp_by_id, ->(id) { where("id = ?", id) }
-  scope :scp_by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
-
   has_many :book, through: :book_views
   has_many :book_views, dependent: :destroy
 
-  has_many :refresh_tokens, dependent: :delete_all
+  has_many :tokens, dependent: :delete_all
+
+  scope :scp_by_id, ->(id) { where(id: id) }
+  scope :scp_by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
+
 
   has_secure_password
 
@@ -28,10 +29,10 @@ class User < ApplicationRecord
   def self.find_by_id(id:, cacheable: false)
     if cacheable
       fetch("#{table_name}:#{id}") do
-        User.scp_by_id(id: id).first
+        User.scp_by_id(id).first
       end
     else
-      User.scp_by_id(id: id).first
+      User.scp_by_id(id).first
     end
   end
 end
