@@ -1,8 +1,7 @@
 class BookPolicy < ApplicationPolicy
-  attr_reader :user, :scope
   class Scope
     def initialize(user, scope)
-      raise BusinessException.new(ErrorMessages::UNAUTHORIZED_ACCESS)
+      raise BusinessException.new(ErrorMessages::UNAUTHORIZED_ACCESS) unless user.present?
       @user = user
       @scope = scope
     end
@@ -14,12 +13,25 @@ class BookPolicy < ApplicationPolicy
         scope.where(status: StatusConst::PUBLISHED)
       end
     end
+
+    private
+    attr_reader :user, :scope
+  end
+
+  def index?
+    true
+  end
+
+  def create?
+    user.role.slug == RoleConst::ADMIN
+  end
+
+  def update?
+    user.role.slug == RoleConst::ADMIN
   end
 
   def show?
-    # is_published = record.status == StatusConst::PUBLISHED
-    # true if user.role.slug == RoleConst::ADMIN
-    # raise BusinessException.new(ErrorMessages::RESOURCE_NOT_AVAILABLE) unless is_published
-    true
+    return true if user.role.slug == RoleConst::ADMIN
+    record.status == StatusConst::PUBLISHED
   end
 end

@@ -11,7 +11,7 @@ module Api
 
       def history
         authorize @current_user
-        viewed_books = BookView.load_book.scp_find_by_uid(@current_user.id)
+        viewed_books = BookView.load_book.find_by_uid(@current_user.id)
         render json: viewed_books.to_a, scope: { include: [ :book ] }
       end
 

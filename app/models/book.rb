@@ -5,17 +5,20 @@ class Book < ApplicationRecord
   has_many :book_view
   has_many :user, through: :book_view
 
-  scope :scp_find_by_id, ->(id) { where(id: id) }
+  scope :by_id, ->(id) { where(id: id) }
   scope :join_categories, -> { joins("LEFT JOIN categories cat ON cat.id = bc.category_id") }
   scope :join_book_categories, -> { joins("LEFT JOIN book_categories bc ON bc.book_id = #{table_name}.id") }
-  scope :scp_book_category_ids, -> { joins("LEFT JOIN book_categories bc ON bc.book_id = #{table_name}.id").select("bc.category_id") }
-  scope :scp_use_index, -> { from("#{table_name} USE INDEX(index_books_on_title_and_description)") }
+  scope :use_index, -> { from("#{table_name} USE INDEX(index_books_on_title_and_description)") }
   scope :search, ->(keywords) { where("MATCH(title, description) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
+
   def self.find_by_id(id)
-    Book.scp_find_by_id(id)
-        .scp_use_index
-        .join_book_categories.join_categories
+    exists = Book.by_id(id)
+        .use_index
+        .join_book_categories
+        .join_categories
         .select("#{table_name}.*, JSON_ARRAYAGG(JSON_OBJECT('id', cat.id, 'name', cat.name)) as categories")
         .first
+    raise BusinessException.new(ErrorMessages::RESOURCE_NOT_FOUND) if exists.id.nil?
+    exists
   end
 end

@@ -36,6 +36,7 @@ roles = []
 end
 
 User.create(email: "stevennguyen@motorist.com", password: "123Steven", username: "stevennguyen", role_id: admin_role_id)
+User.create(email: "locnguyen01@gmail.com", password: "123Steven", username: "locnguyen01", role_id: user_role_id)
 perms = [
   { resource: "user", action: PermissionConst::CREATE, role_id: user_role_id },
   { resource: "user", action: PermissionConst::UPDATE, role_id: admin_role_id },

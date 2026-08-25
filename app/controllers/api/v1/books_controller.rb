@@ -1,17 +1,33 @@
 module Api
   module V1
     class BooksController < Api::V1::ApiV1Controller
-      after_action :verify_authorized, except: [ :index ]
+      before_action :set_book, only: [ :show, :update ]
 
-      before_action :set_book, only: [ :show ]
+      after_action :verify_authorized, except: [ :index ]
+      after_action :verify_policy_scoped, only: [ :index ]
+
 
       def index
+        evaludated = policy_scope(Book)
+        data, meta = self.class.paginator(evaludated, paginate_params) do |item|
+         BookSerializer.new(item)
+        end
+
+        render json: { data: data, meta: meta }, adapter: nil
       end
 
       def show
         authorize @book
         # UserReadBookJobs.perform_later(@current_user[:id], @book.id)
-        render json: @book, scope: {categories: JSON.parse(@book.categories), include: [:author]}
+        scope = { include: [ :author ] }
+        scope[:categories] = JSON.parse(@book.categories) if @book&.categories
+        render json: @book, scope: scope
+      end
+
+      def update
+        authorize @book
+        @book.update(item_params)
+        render json: @book
       end
 
       private
@@ -21,7 +37,13 @@ module Api
 
       def set_book
         id = params[:id]
-        @book = Book.eager_load(:author).find_by_id(id)
+        exists = Book.eager_load(:author).find_by_id(id)
+        raise BusinessException.new(ErrorMessages::RESOURCE_NOT_FOUND) unless exists.present?
+        @book = exists
+      end
+
+      def item_params
+        params.require(:book).permit(:title, :description)
       end
     end
   end

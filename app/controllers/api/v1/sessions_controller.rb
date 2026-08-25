@@ -4,7 +4,13 @@ module Api
       include Jwt
       include Authenticator
 
-      skip_before_action :authenticated_request, only: [:login]
+      skip_before_action :authenticated_request, only: [ :login ]
+
+      def index
+      end
+
+      def show
+      end
 
       # POST /api/v1/auth/login
       def login
@@ -21,7 +27,6 @@ module Api
         render json: { access_token: access_token, user_id: user[:id] }, status: :ok
       end
 
-      # DELETE /api/v1/auth/logout
       def logout
         self.class.logout!(user: current_user)
         head :no_content

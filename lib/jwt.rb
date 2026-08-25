@@ -3,12 +3,6 @@ module Jwt
   include Cacheable
 
   class_methods do
-    def revoke(user:)
-      user.tokens.destroy_all
-    rescue => e
-      raise BusinessException.new(ErrorMessages::INVALID_TOKEN)
-    end
-
     def revoke_all(user:)
       user.tokens.destroy_all
     end
@@ -19,7 +13,7 @@ module Jwt
     end
 
     def access_token_expiry
-      15.minutes
+      120.minutes
     end
   end
 end

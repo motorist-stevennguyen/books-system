@@ -22,7 +22,7 @@ module Authenticator
     end
 
     def logout!(user:)
-      revoke(user: user)
+      revoke_all(user: user)
     end
   end
 end
