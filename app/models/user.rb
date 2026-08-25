@@ -2,8 +2,6 @@ class User < ApplicationRecord
   include RequiredNewUserValidator
   include Cacheable
 
-  belongs_to :role
-
   has_many :book, through: :book_views
   has_many :book_views, dependent: :destroy
 

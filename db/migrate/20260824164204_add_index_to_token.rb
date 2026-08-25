@@ -1,5 +1,0 @@
-class AddIndexToToken < ActiveRecord::Migration[8.1]
-  def change
-    add_index :tokens, :crypted_token, unique: true
-  end
-end

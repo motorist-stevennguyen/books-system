@@ -26,7 +26,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["book_id", "category_id"], name: "index_book_categories_on_book_id_and_category_id", unique: true
     t.index ["book_id"], name: "index_book_categories_on_book_id"
     t.index ["category_id"], name: "index_book_categories_on_category_id"
   end
@@ -37,9 +36,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.timestamp "viewed_at"
-    t.index ["book_id", "viewed_at"], name: "index_book_views_on_book_id_and_viewed_at"
     t.index ["book_id"], name: "index_book_views_on_book_id"
-    t.index ["user_id", "viewed_at"], name: "index_book_views_on_user_id_and_viewed_at"
     t.index ["user_id"], name: "index_book_views_on_user_id"
   end
 
@@ -68,40 +65,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.string "slug"
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "role_permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.timestamp "granted_at"
-    t.bigint "permission_id", null: false
-    t.bigint "role_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
-    t.index ["role_id"], name: "index_role_permissions_on_role_id"
-  end
-
-  create_table "roles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.boolean "enable"
-    t.string "name"
-    t.string "slug"
-    t.datetime "updated_at", null: false
-  end
-
   create_table "tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "crypted_token"
     t.datetime "expires_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["crypted_token"], name: "index_tokens_on_crypted_token", unique: true
     t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 
@@ -109,13 +78,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.datetime "created_at", null: false
     t.string "email"
     t.string "password_digest"
-    t.bigint "role_id", null: false
-    t.string "status"
+    t.string "role", default: "user"
+    t.string "status", default: "active"
     t.datetime "updated_at", null: false
+    t.string "user_role", default: "user"
+    t.string "user_status", default: "active"
     t.string "username"
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["role_id"], name: "index_users_on_role_id"
-    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "book_categories", "books"
@@ -123,8 +91,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
   add_foreign_key "book_views", "books"
   add_foreign_key "book_views", "users"
   add_foreign_key "books", "authors"
-  add_foreign_key "role_permissions", "permissions"
-  add_foreign_key "role_permissions", "roles"
   add_foreign_key "tokens", "users"
-  add_foreign_key "users", "roles"
 end

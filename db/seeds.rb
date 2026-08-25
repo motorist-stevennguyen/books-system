@@ -9,9 +9,6 @@
 #   end
 require "rails/all"
 User.destroy_all
-RolePermission.destroy_all
-Role.destroy_all
-Permission.destroy_all
 BookCategory.destroy_all
 Book.destroy_all
 Author.destroy_all
@@ -21,52 +18,8 @@ Category.destroy_all
 admin_role_id = 0
 user_role_id = 0
 
-roles = []
-[
-  { name: "Admin", slug: "admin" },
-  { name: "User", slug: "user" }
-].each do |role|
-  created = Role.create(name: role[:name], slug: role[:slug], enable: true)
-  roles << created
-  if role[:slug] == "admin"
-    admin_role_id = created.id
-  else
-    user_role_id = created.id
-  end
-end
-
-User.create(email: "stevennguyen@motorist.com", password: "123Steven", username: "stevennguyen", role_id: admin_role_id)
-User.create(email: "locnguyen01@gmail.com", password: "123Steven", username: "locnguyen01", role_id: user_role_id)
-perms = [
-  { resource: "user", action: PermissionConst::CREATE, role_id: user_role_id },
-  { resource: "user", action: PermissionConst::UPDATE, role_id: admin_role_id },
-  { resource: "user", action: PermissionConst::READ, role_id: user_role_id },
-  { resource: "user", action: PermissionConst::DELETE, role_id: user_role_id },
-
-  { resource: "role", action: PermissionConst::CREATE, role_id: admin_role_id },
-  { resource: "role", action: PermissionConst::UPDATE, role_id: admin_role_id },
-  { resource: "role", action: PermissionConst::READ, role_id: admin_role_id },
-  { resource: "role", action: PermissionConst::DELETE, role_id: admin_role_id },
-
-  { resource: "permission", action: PermissionConst::CREATE, role_id: admin_role_id },
-  { resource: "permission", action: PermissionConst::UPDATE, role_id: admin_role_id },
-  { resource: "permission", action: PermissionConst::READ, role_id: admin_role_id },
-  { resource: "permission", action: PermissionConst::DELETE, role_id: admin_role_id },
-
-  { resource: "book", action: PermissionConst::CREATE, role_id: admin_role_id },
-  { resource: "book", action: PermissionConst::UPDATE, role_id: admin_role_id },
-  { resource: "book", action: PermissionConst::READ, role_id: admin_role_id },
-  { resource: "book", action: PermissionConst::DELETE, role_id: admin_role_id }
-]
-
-perms.each do |resource|
-  perm = Permission.create(slug: "#{resource[:action]}_#{resource[:resource]}", name: "#{resource[:action].upcase} #{resource[:resource].upcase}")
-  resource[:id] = perm.id
-end
-
-perms.each do |perm|
-   RolePermission.create(role_id: perm[:role_id], permission_id: perm[:id])
-end
+User.create(email: "stevennguyen@motorist.com", password: "123Steven", username: "stevennguyen", role: RoleConst::ADMIN)
+User.create(email: "locnguyen01@gmail.com", password: "123Steven", username: "locnguyen01", role: RoleConst::USER)
 
 
 timestamp = Time.current
@@ -110,7 +63,7 @@ books_data = Array.new(50) do
   {
     author_id: author_ids.sample,
     title: Faker::Book.title,
-    code: "BOOK-#{Faker::Alphanumeric.alphanumeric(number: 8).upcase}",
+    code: "#{Faker::Alphanumeric.alphanumeric(number: 8).upcase}",
     description: Faker::Lorem.paragraph(sentence_count: 4),
     language: languages.sample,
     pages: rand(100..900),

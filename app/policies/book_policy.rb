@@ -7,7 +7,7 @@ class BookPolicy < ApplicationPolicy
     end
 
     def resolve
-      if user.role.slug === RoleConst::ADMIN
+      if user.role === RoleConst::ADMIN
         scope.all
       else
         scope.where(status: StatusConst::PUBLISHED)
@@ -23,15 +23,15 @@ class BookPolicy < ApplicationPolicy
   end
 
   def create?
-    user.role.slug == RoleConst::ADMIN
+    user.role == RoleConst::ADMIN
   end
 
   def update?
-    user.role.slug == RoleConst::ADMIN
+    user.role == RoleConst::ADMIN
   end
 
   def show?
-    return true if user.role.slug == RoleConst::ADMIN
+    return true if user.role == RoleConst::ADMIN
     record.status == StatusConst::PUBLISHED
   end
 end

@@ -5,7 +5,7 @@ module Pagination
 
         private
         def paginate_params
-            params.permit(:page, :take, :sorted, :order_by).reverse_merge({ page: 1, take: 5, order_by: "created_at", sorted: "asc" })
+            params.permit(:page, :take, :sorted, :order_by, :keywords).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "asc" })
         end
       end
 

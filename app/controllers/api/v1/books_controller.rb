@@ -8,8 +8,8 @@ module Api
 
 
       def index
-        evaludated = policy_scope(Book)
-        data, meta = self.class.paginator(evaludated, paginate_params) do |item|
+        evaluated = paginate_params[:keywords].blank? ? policy_scope(Book) : policy_scope(Book).search(paginate_params[:keywords])
+        data, meta = self.class.paginator(evaluated, paginate_params) do |item|
          BookSerializer.new(item)
         end
 
