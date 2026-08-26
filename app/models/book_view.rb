@@ -9,6 +9,9 @@ class BookView < ApplicationRecord
   scope :load_user, -> { eager_load(:user) }
   scope :viewed_at_before, ->(time) { where("viewed_at < ?", Time.new(time).utc.strftime("%FT%T")) }
   scope :viewed_at_after, ->(time) { where("viewed_at > ?", Time.new(time).utc.strftime("%FT%T")) }
+  scope :search, ->(keywords) {
+    where(book_id: Book.search(keywords))
+  }
 
   private
   def init_callback

@@ -9,11 +9,23 @@ Rails.application.routes.draw do
       get "books/:id", to: "books#show"
       get :history, to: "users#history"
       get :books, to: "books#index"
-      patch "books/:id", to: "books#update"
       get :authors, to: "authors#index"
       get :categories, to: "categories#index"
       get "categories/:id", to: "categories#show"
-      patch "categories/:id", to: "categories#update"
+
+      scope "/admin" do
+        post :books, to: "books#create"
+        patch "books/:id", to: "books#update"
+        delete "books/:id", to: "books#destroy"
+
+        post :categories, to: "categories#create"
+        patch "categories/:id", to: "categories#update"
+        delete "categories/:id", to: "categories#destroy"
+
+        post :authors, to: "authors#create"
+        patch "authors/:id", to: "authors#update"
+        delete "authors/:id", to: "authors#destroy"
+      end
     end
   end
 end

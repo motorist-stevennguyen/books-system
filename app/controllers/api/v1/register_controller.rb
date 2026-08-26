@@ -1,7 +1,7 @@
 module Api
   module V1
     class RegisterController < ApiV1Controller
-      include Jwt
+      include Tokens
 
       def create
         @user = User.new(register_params)

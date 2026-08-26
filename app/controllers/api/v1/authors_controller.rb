@@ -1,7 +1,7 @@
 module Api
   module V1
     class AuthorsController < Api::V1::ApiV1Controller
-      before_action :set_author, only: [ :show, :update ]
+      before_action :set_author, only: [ :show, :update, :destroy ]
 
       def index
         evaludated = policy_scope(Author)
@@ -20,6 +20,12 @@ module Api
         authorize @author
         @author.update(item_params)
         render json: @author
+      end
+
+      def destroy
+        authorize @author
+        @author.destroy
+        head :no_content
       end
 
       private

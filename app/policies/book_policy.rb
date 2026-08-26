@@ -10,7 +10,7 @@ class BookPolicy < ApplicationPolicy
       if user.role === RoleConst::ADMIN
         scope.all
       else
-        scope.where(status: StatusConst::PUBLISHED)
+        scope.where(status: StatusConst::PUBLIC)
       end
     end
 
@@ -32,6 +32,6 @@ class BookPolicy < ApplicationPolicy
 
   def show?
     return true if user.role == RoleConst::ADMIN
-    record.status == StatusConst::PUBLISHED
+    record.status == StatusConst::PUBLIC
   end
 end

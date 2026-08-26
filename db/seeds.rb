@@ -56,7 +56,7 @@ end
 Author.insert_all(authors_data)
 author_ids = Author.pluck(:id)
 
-statuses = %w[draft published archived]
+statuses = %w[public deleted private]
 languages = %w[English Spanish French German Japanese]
 
 books_data = Array.new(50) do
@@ -86,7 +86,6 @@ book_ids.each do |b_id|
     book_categories_data << {
       book_id: b_id,
       category_id: c_id,
-      assigned_at: Faker::Time.between(from: 1.year.ago, to: Time.current),
       created_at: timestamp,
       updated_at: timestamp
     }

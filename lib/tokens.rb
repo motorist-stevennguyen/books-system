@@ -1,4 +1,4 @@
-module Jwt
+module Tokens
   extend ActiveSupport::Concern
   include Cacheable
 
@@ -13,7 +13,7 @@ module Jwt
     end
 
     def access_token_expiry
-      120.minutes
+      8.hours
     end
   end
 end

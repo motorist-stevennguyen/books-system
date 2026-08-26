@@ -1,5 +1,5 @@
 module StatusConst
-  PUBLISHED = "published"
-  DRAFT = "draft"
-  ARCHIVED = "archived"
+  PUBLIC = "public"
+  PRIVATE = "private"
+  DELETED = "deleted"
 end

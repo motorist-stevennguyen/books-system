@@ -1,19 +1,19 @@
 class Token < ApplicationRecord
   include Cacheable
-  include Jwt
+  include Tokens
 
   belongs_to :user
   before_create :set_crypted_token
 
   attr_accessor :token
 
-  scope :active, -> {where("expires_at > ?", Time.now)}
-  scope :by_crypted_token, ->(crypted_token) {where(crypted_token: crypted_token)}
+  scope :active, -> { where("expires_at > ?", Time.now) }
+  scope :by_crypted_token, ->(crypted_token) { where(crypted_token: crypted_token) }
 
   def self.find_by_token(raw_token)
     return nil if raw_token.blank?
     crypted = Digest::SHA256.hexdigest(raw_token)
-    active.by_crypted_token(crypted).first
+    active.eager_load(:user).by_crypted_token(crypted).first
   end
 
   private

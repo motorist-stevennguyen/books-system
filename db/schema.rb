@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_080149) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.string "name"
     t.string "nationality"
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_authors_on_name"
   end
 
   create_table "book_categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -49,7 +50,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.string "language"
     t.integer "pages"
     t.date "published_date"
-    t.string "status"
+    t.column "status", "enum('public','private','deleted')", default: "public", null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_on_author_id"
@@ -78,8 +79,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_164357) do
     t.datetime "created_at", null: false
     t.string "email"
     t.string "password_digest"
-    t.string "role", default: "user"
-    t.string "status", default: "active"
+    t.column "role", "enum('user','admin','member')", default: "user", null: false
+    t.column "status", "enum('active','deleted')", default: "active", null: false
     t.datetime "updated_at", null: false
     t.string "user_role", default: "user"
     t.string "user_status", default: "active"

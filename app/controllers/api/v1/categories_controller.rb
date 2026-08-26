@@ -21,6 +21,12 @@ module Api
         render json: @category
       end
 
+      def destroy
+        authorize @category
+        @category.destroy
+        head :no_content
+      end
+
       private
       def set_category
         exists = Category.find_by_id(params[:id])
@@ -28,7 +34,7 @@ module Api
         @category = exists
       end
       def category_params
-        params.require(:category).permit(:name, :description)
+        params.require(:category).permit(:name, :slug, :description)
       end
     end
   end

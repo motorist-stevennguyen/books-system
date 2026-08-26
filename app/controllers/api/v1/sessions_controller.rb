@@ -1,7 +1,7 @@
 module Api
   module V1
     class SessionsController < Api::V1::ApiV1Controller
-      include Jwt
+      include Tokens
       include Authenticator
 
       skip_before_action :authenticated_request, only: [ :login ]

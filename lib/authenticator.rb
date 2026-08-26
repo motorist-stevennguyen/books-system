@@ -1,6 +1,6 @@
 module Authenticator
   extend ActiveSupport::Concern
-  include Jwt
+  include Tokens
 
   class_methods do
     def authenticated(headers:, at: nil)
@@ -14,7 +14,7 @@ module Authenticator
 
       existing_rt = Token.find_by_token(rt)
       raise BusinessException.new(ErrorMessages::INVALID_TOKEN) unless existing_rt.present?
-      User.find_by_id(id: existing_rt.user_id)
+      existing_rt.user
     end
 
     def extract_header_token(headers:)
