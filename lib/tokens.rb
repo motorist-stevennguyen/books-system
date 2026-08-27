@@ -1,6 +1,5 @@
 module Tokens
   extend ActiveSupport::Concern
-  include Cacheable
 
   class_methods do
     def revoke_all(user:)
@@ -8,8 +7,7 @@ module Tokens
     end
 
     def create_tokens(user)
-      access_token = user.tokens.create!
-      access_token.token
+      user.tokens.create!
     end
 
     def access_token_expiry

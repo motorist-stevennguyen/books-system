@@ -2,7 +2,7 @@ module Configs
   module Redis
     module_function
     def with_redis(&block)
-      ConfigData::REDIS_POOL.with(&block)
+      Consts::ConfigData::REDIS_POOL.with(&block)
     end
 
     def available?

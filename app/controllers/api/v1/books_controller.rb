@@ -8,8 +8,8 @@ module Api
 
 
       def index
-        opts = paginate_params
-        keywords = paginate_params[:keywords]
+        opts = filterd_params
+        keywords = opts[:keywords]
         opts[:order_by] = "books.created_at"
         evaluated = keywords.blank? ? policy_scope(Book) : policy_scope(Book).search(keywords)
 

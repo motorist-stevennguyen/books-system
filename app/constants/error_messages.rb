@@ -10,4 +10,5 @@ module ErrorMessages
   AT_IS_MISSING = "400|Access token is missing"
   RT_IS_MISSING = "400|Refresh token is missing"
   ACCESS_DENIED = "400|Access denied"
+  RECORD_INVALID = "400|Record is duplicated or invalid"
 end

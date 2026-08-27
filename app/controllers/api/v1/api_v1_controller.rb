@@ -2,9 +2,8 @@ module Api
   module V1
     class ApiV1Controller < ApplicationController
       include Pundit::Authorization
-      include Api::Concerns::JsonRequest
-      include Pagination
       include Authenticator
+      include Pagination
 
       before_action :authenticated_request
 
@@ -24,7 +23,7 @@ module Api
 
       def authenticated_request
         @current_user = self.class.authenticated(headers: request.headers, at: request.headers["Authorization"]&.split(" ")&.last)
-        Rails.logger.info("[#{self.class}] #{current_user[:uid]} #{current_user[:email]}")
+        Rails.logger.info("[#{self.class}] #{current_user[:uid]} | #{current_user.role} - #{current_user[:email]}")
       end
     end
   end

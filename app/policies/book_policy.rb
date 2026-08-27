@@ -30,6 +30,10 @@ class BookPolicy < ApplicationPolicy
     user.role == RoleConst::ADMIN
   end
 
+  def destroy?
+      user.role == RoleConst::ADMIN
+  end
+
   def show?
     return true if user.role == RoleConst::ADMIN
     record.status == StatusConst::PUBLIC

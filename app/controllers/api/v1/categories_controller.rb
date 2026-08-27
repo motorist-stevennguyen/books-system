@@ -1,13 +1,20 @@
 module Api
   module V1
     class CategoriesController < Api::V1::ApiV1Controller
-      before_action :set_category, only: [ :show, :update ]
+      before_action :set_category, only: [ :show, :update, :destroy ]
       after_action :verify_policy_scoped, only: [ :index ]
 
       def index
         evaludated = policy_scope(Category)
-        data, meta = self.class.paginator(evaludated, paginate_params) do |item| CategorySerializer.new(item) end
+        data, meta = self.class.paginator(evaludated, filterd_params) do |item| CategorySerializer.new(item) end
         render json: { data: data, meta: meta }, adapter: nil
+      end
+
+      def create
+        authorize Book
+        category = Category.new(category_params)
+        raise BusinessException.new(ErrorMessages::RECORD_INVALID) unless category.save
+        render json: category
       end
 
       def show

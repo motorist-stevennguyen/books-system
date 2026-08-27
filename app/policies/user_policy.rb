@@ -37,4 +37,8 @@ class UserPolicy < ApplicationPolicy
   def show?
     true
   end
+
+  def assets?
+    user.role == RoleConst::ADMIN
+  end
 end

@@ -16,6 +16,11 @@ class AuthorPolicy < ApplicationPolicy
     private
     attr_reader :user, :scope
   end
+
+  def index?
+    true
+  end
+
   def create?
     user.role == RoleConst::ADMIN
   end

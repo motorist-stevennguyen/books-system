@@ -5,23 +5,18 @@ class BookSerializer < ActiveModel::Serializer
   attributes :id, :code, :thumbnail, :language, :title, :description, :author_id
   attribute :author, if: :include_author?
   attribute :categories, if: :include_categories?
-  attributes :status, if: :is_admin?
-
-  def is_admin?
-    current_user.rol == RoleConst::ADMIN
-  end
 
   def categories
     scope[:categories] ||= []
   end
 
   def author
-    author_obj = object.author
+    author_obj = object&.author
     {
       bio: author_obj.bio,
       name: author_obj.name,
       nationality: author_obj.nationality
-    }
+    } unless author_obj.nil?
   end
 
   def thumbnail

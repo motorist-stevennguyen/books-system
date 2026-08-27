@@ -2,7 +2,6 @@ class BookViewSerializer < ActiveModel::Serializer
   include DateTimeSerializer
   include IncludeSerializer
 
-  attributes :id, :user_id, :book_id
   attribute :book, if: :include_book?
   attribute :user, if: :include_user?
 

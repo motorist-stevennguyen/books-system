@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get :status, to: "health#status"
       get :profile, to: "users#profile"
       patch :profile, to: "users#update_profile"
+      get :history, to: "users#history"
 
       post :login, to: "sessions#create"
       get :logout, to: "sessions#destroy"

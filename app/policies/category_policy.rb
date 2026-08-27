@@ -1,6 +1,7 @@
 class CategoryPolicy < ApplicationPolicy
   class Scope
     def initialize(user, scope)
+      rais BusinessException.new(ErrorMessages::UNAUTHORIZED_ACCESS) unless user.present?
       @user = user
       @scope = scope
     end
@@ -16,6 +17,11 @@ class CategoryPolicy < ApplicationPolicy
     private
     attr_reader :user, :scope
   end
+
+  def index?
+      true
+  end
+
   def create?
     user.role == RoleConst::ADMIN
   end

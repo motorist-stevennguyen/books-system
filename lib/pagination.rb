@@ -1,12 +1,10 @@
 module Pagination
   extend ActiveSupport::Concern
       included do
-        before_action :paginate_params, only: [ :index ]
+      end
 
-        private
-        def paginate_params
-            params.permit(:page, :take, :sorted, :order_by, :keywords).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "desc" })
-        end
+      def filterd_params(*params_name)
+        params.permit(:page, :take, :sorted, :order_by, :keywords, *params_name).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "desc" })
       end
 
       class_methods do

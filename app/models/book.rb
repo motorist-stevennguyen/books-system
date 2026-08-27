@@ -26,7 +26,7 @@ class Book < ApplicationRecord
 
   scope :search_by_code, ->(keywords) { where("code LIKE ?", "%#{keywords}%") }
   scope :search_by_author, ->(keywords) { where(author_id: Author.where("name LIKE ?", "%#{keywords}%")) }
-  scope :search_by_name, ->(keywords) { where("MATCH(title, description) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
+  scope :search_by_name, ->(keywords) { where("MATCH(title) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
 
   def self.find_by_id(id)
     exists = Book.by_id(id)

@@ -5,7 +5,6 @@ module Api
       include Authenticator
 
       skip_before_action :authenticated_request, only: [ :create ]
-      skip_before_action :paginate_params
 
       def create
         val = params[:email] || params[:username]
@@ -15,7 +14,7 @@ module Api
 
         raise BusinessException.new(ErrorMessages::INVALID_CREDENTIALS) unless user&.authenticate(params[:password])
         access_token = self.class.create_tokens(user)
-        render json: { access_token: access_token, user_id: user[:id] }, status: :ok
+        render json: { access_token: access_token.token, expires_at: access_token.expires_at }, status: :ok
       end
 
       def destroy

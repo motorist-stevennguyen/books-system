@@ -42,12 +42,13 @@ module Api
 
       def history
         authorize @current_user
-        keywords = paginate_params[:keywords]
+        opts = filterd_params
+        keywords = opts[:keywords]
         viewed_books = BookView.load_book.find_by_uid(@current_user.id)
         viewed_books = keywords.blank? ? viewed_books : viewed_books.search(keywords)
-        opts = paginate_params
         opts["order_by"] = "book_views.created_at"
         opts["sorted"] = "desc"
+
         data, meta = self.class.paginator(viewed_books, opts) do |item|
           BookViewSerializer.new(item, scope: { include: [ :book ] })
         end
@@ -55,7 +56,8 @@ module Api
       end
 
       def profile
-        user = User.find_by_email_or_username(val: current_user[:username], cacheable: true)
+        authorize User
+        user = User.find_by_email_or_username(val: current_user[:username])
         render json: user
       end
 

@@ -8,12 +8,12 @@ class CreateBooks < ActiveRecord::Migration[8.1]
       t.integer :pages
       t.string :language
       t.string :cover_url
-      t.belongs_to :author, null: false, foreign_key: true
+      t.belongs_to :author, null: true, foreign_key: true
 
       t.timestamps
     end
 
-    add_column :books, :code, :string
     add_index :books, :code, unique: true
+    add_index :books, :title, type: :fulltext
   end
 end

@@ -22,7 +22,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
   end
 
   create_table "book_categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.timestamp "assigned_at"
     t.bigint "book_id", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
@@ -37,12 +36,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.timestamp "viewed_at"
+    t.index ["book_id", "viewed_at"], name: "index_book_views_on_book_id_and_viewed_at"
     t.index ["book_id"], name: "index_book_views_on_book_id"
     t.index ["user_id"], name: "index_book_views_on_user_id"
   end
 
   create_table "books", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "author_id", null: false
+    t.bigint "author_id"
     t.string "code"
     t.string "cover_url"
     t.datetime "created_at", null: false
@@ -55,7 +55,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_on_author_id"
     t.index ["code"], name: "index_books_on_code", unique: true
-    t.index ["title", "description"], name: "index_books_on_title_and_description", type: :fulltext
+    t.index ["title"], name: "index_books_on_title", type: :fulltext
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -85,11 +85,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
     t.column "role", "enum('user','admin','member')", default: "user", null: false
     t.column "status", "enum('active','deleted')", default: "active", null: false
     t.datetime "updated_at", null: false
-    t.string "user_role", default: "user"
-    t.string "user_status", default: "active"
     t.string "username"
     t.index ["email", "username", "first_name", "last_name"], name: "index_users_on_email_and_username_and_first_name_and_last_name", type: :fulltext
-    t.index ["id"], name: "index_users_on_id", unique: true
   end
 
   add_foreign_key "book_categories", "books"

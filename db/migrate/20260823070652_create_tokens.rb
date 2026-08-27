@@ -1,4 +1,4 @@
-class CreateRefreshTokens < ActiveRecord::Migration[8.1]
+class CreateTokens < ActiveRecord::Migration[8.1]
   def change
     create_table :tokens do |t|
       t.string :crypted_token
