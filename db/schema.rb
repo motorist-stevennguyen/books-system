@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_080149) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -72,12 +72,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_080149) do
     t.datetime "expires_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["crypted_token"], name: "index_tokens_on_crypted_token", unique: true
     t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
+    t.string "first_name"
+    t.string "last_name"
     t.string "password_digest"
     t.column "role", "enum('user','admin','member')", default: "user", null: false
     t.column "status", "enum('active','deleted')", default: "active", null: false
@@ -85,6 +88,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_080149) do
     t.string "user_role", default: "user"
     t.string "user_status", default: "active"
     t.string "username"
+    t.index ["email", "username", "first_name", "last_name"], name: "index_users_on_email_and_username_and_first_name_and_last_name", type: :fulltext
+    t.index ["id"], name: "index_users_on_id", unique: true
   end
 
   add_foreign_key "book_categories", "books"

@@ -5,7 +5,7 @@ module Pagination
 
         private
         def paginate_params
-            params.permit(:page, :take, :sorted, :order_by, :keywords).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "asc" })
+            params.permit(:page, :take, :sorted, :order_by, :keywords).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "desc" })
         end
       end
 
@@ -14,7 +14,11 @@ module Pagination
           take = opts[:take].to_i
           page = opts[:page].to_i
 
-          paginated = relation.order("#{opts[:order_by]} #{opts[:sorted].upcase}").limit(take+1).offset(take * (page > 0 ? page - 1 : 1)).to_a
+          paginated = relation
+          .order("#{opts[:order_by]} #{opts[:sorted].upcase}")
+          .limit(take+1)
+          .offset(take * (page > 0 ? page - 1 : 1)).to_a
+
           has_next = paginated.length == take+1
           paginated.pop if has_next
 

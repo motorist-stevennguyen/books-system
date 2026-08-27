@@ -4,30 +4,21 @@ module Api
       include Tokens
       include Authenticator
 
-      skip_before_action :authenticated_request, only: [ :login ]
+      skip_before_action :authenticated_request, only: [ :create ]
+      skip_before_action :paginate_params
 
-      def index
-      end
-
-      def show
-      end
-
-      # POST /api/v1/auth/login
-      def login
+      def create
         val = params[:email] || params[:username]
         raise BusinessException.new("400|Username or email is required") if val.blank?
 
         user = User.find_by_email_or_username(val: val.downcase, cacheable: true)
 
-        unless user&.authenticate(params[:password])
-          return render json: { error: "Invalid email or password" }, status: :unauthorized
-        end
-
+        raise BusinessException.new(ErrorMessages::INVALID_CREDENTIALS) unless user&.authenticate(params[:password])
         access_token = self.class.create_tokens(user)
         render json: { access_token: access_token, user_id: user[:id] }, status: :ok
       end
 
-      def logout
+      def destroy
         self.class.logout!(user: current_user)
         head :no_content
       end

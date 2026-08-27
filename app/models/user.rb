@@ -5,10 +5,11 @@ class User < ApplicationRecord
   has_many :book, through: :book_views
   has_many :book_views, dependent: :destroy
 
-  has_many :tokens, dependent: :delete_all
+  has_many :tokens, dependent: :destroy
 
   scope :scp_by_id, ->(id) { where(id: id) }
   scope :scp_by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
+  scope :search_by_username_email, ->(keywords) { where("MATCH(first_name, last_name, username, email) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
 
 
   has_secure_password
@@ -21,6 +22,10 @@ class User < ApplicationRecord
     else
       User.scp_by_email_or_username(val).first
     end
+  end
+
+  def self.search(keywords)
+    User.search_by_username_email(keywords)
   end
 
 

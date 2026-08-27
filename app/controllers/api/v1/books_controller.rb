@@ -8,24 +8,14 @@ module Api
 
 
       def index
+        opts = paginate_params
         keywords = paginate_params[:keywords]
+        opts[:order_by] = "books.created_at"
         evaluated = keywords.blank? ? policy_scope(Book) : policy_scope(Book).search(keywords)
-        # author_ids = evaluated.pluck(:author_id)
 
-        # mapped_authors = {}
-        # Author.where("id in (?)", author_ids).to_a.each do |author|
-        #   mapped_authors["#{author.id}"] = AuthorSerializer.new(author)
-        # end
-
-        data, meta = self.class.paginator(evaluated, paginate_params) do |item|
-          BookSerializer.new(item)
+        data, meta = self.class.paginator(evaluated.eager_load(:author), opts) do |item|
+          BookSerializer.new(item, scope: { include: [ :author ] })
         end
-
-        # data = data.map do |item|
-        #   json_item = item.as_json
-        #   json_item["author"] = mapped_authors["#{json_item.fetch(:author_id)}"]
-        #   json_item
-        # end
 
         render json: { data: data, meta: meta }, adapter: nil
       end
@@ -34,9 +24,6 @@ module Api
         authorize Book
         book = Book.new(book_params)
         book.save!
-
-        rescue => e
-          raise BusinessException.new("400|#{e.message}")
 
         render json: book
       end
@@ -51,7 +38,7 @@ module Api
 
       def update
         authorize @book
-        @book.update(item_params)
+        @book.update(book_params)
         render json: @book
       end
 
@@ -71,10 +58,6 @@ module Api
         exists = Book.eager_load(:author).find_by_id(id)
         raise BusinessException.new(ErrorMessages::RESOURCE_NOT_FOUND) unless exists.present?
         @book = exists
-      end
-
-      def item_params
-        params.require(:book).permit(:title, :description)
       end
 
       def book_params

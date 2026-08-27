@@ -9,11 +9,12 @@ module Api
       before_action :authenticated_request
 
       rescue_from StandardError do |exception|
-        case exception.class
-        when Pundit::NotAuthorizedError.class
-            render json: { error: exception.message, code: 400 }, status: :bad_request
+        case exception.instance_of?(Pundit::NotAuthorizedError)
+        when true
+          message, code = ErrorMessages::ACCESS_DENIED.split("|")
+          render json: { error: message, code: code }, status: :bad_request
         else
-            render json: { error: exception.message, code: exception.code.to_i }, status: :bad_request
+          render json: { error: exception.message, code: exception.code.to_i }, status: :bad_request
         end
       end
 
