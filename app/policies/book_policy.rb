@@ -1,0 +1,53 @@
+class BookPolicy < ApplicationPolicy
+  class Scope
+    def initialize(user, scope)
+      raise BusinessException.new(ErrorMessages::UNAUTHORIZED_ACCESS) unless user.present?
+      @user = user
+      @scope = scope
+    end
+
+    def resolve
+      if user.role === RoleConst::ADMIN
+        scope.all
+      else
+        scope.where(status: StatusConst::PUBLIC)
+      end
+    end
+
+    private
+    attr_reader :user, :scope
+  end
+
+  def destroy_many?
+        user.role == RoleConst::ADMIN
+  end
+
+  def growth?
+    user.role == RoleConst::ADMIN
+  end
+
+  def chart?
+    user.role == RoleConst::ADMIN
+  end
+
+  def index?
+    true
+  end
+
+  def create?
+    user.role == RoleConst::ADMIN
+  end
+
+  def update?
+    user.role == RoleConst::ADMIN
+  end
+
+  def destroy?
+      user.role == RoleConst::ADMIN
+  end
+
+  def show?
+    return true if user.role == RoleConst::ADMIN
+    record.status == StatusConst::PUBLIC
+  end
+end

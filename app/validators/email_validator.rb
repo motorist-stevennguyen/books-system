@@ -4,7 +4,7 @@ class EmailValidator < ActiveModel::EachValidator
       record.errors.add attribute, " is empty!"
       return
     end
-    if !URI::MailTo::EMAIL_REGEXP.match?(value)
+    unless URI::MailTo::EMAIL_REGEXP.match?(value)
       record.errors.add attribute, " is not valid!"
     end
   end

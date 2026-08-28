@@ -8,5 +8,8 @@ class CreateAuthors < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    add_index :authors, :id, unique: true
+    add_index :authors, :name, type: :fulltext
   end
 end

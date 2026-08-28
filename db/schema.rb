@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_070652) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -18,10 +18,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
     t.string "name"
     t.string "nationality"
     t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_authors_on_id", unique: true
+    t.index ["name"], name: "index_authors_on_name", type: :fulltext
   end
 
   create_table "book_categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.timestamp "assigned_at"
     t.bigint "book_id", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
@@ -31,17 +32,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
   end
 
   create_table "book_views", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "book_id", null: false
+    t.bigint "book_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.timestamp "viewed_at"
     t.index ["book_id"], name: "index_book_views_on_book_id"
     t.index ["user_id"], name: "index_book_views_on_user_id"
   end
 
   create_table "books", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "author_id", null: false
+    t.bigint "author_id"
     t.string "code"
     t.string "cover_url"
     t.datetime "created_at", null: false
@@ -49,11 +49,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
     t.string "language"
     t.integer "pages"
     t.date "published_date"
-    t.string "status"
+    t.column "status", "enum('public','private','deleted')", default: "public", null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_on_author_id"
     t.index ["code"], name: "index_books_on_code", unique: true
+    t.index ["title"], name: "index_books_on_title", type: :fulltext
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -64,42 +65,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.string "slug"
+    t.datetime "expires_at"
+    t.string "hashed_token"
     t.datetime "updated_at", null: false
-  end
-
-  create_table "role_permissions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.timestamp "granted_at"
-    t.bigint "permission_id", null: false
-    t.bigint "role_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
-    t.index ["role_id"], name: "index_role_permissions_on_role_id"
-  end
-
-  create_table "roles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.boolean "enable"
-    t.string "name"
-    t.string "slug"
-    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["hashed_token"], name: "index_tokens_on_hashed_token", unique: true
+    t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
+    t.string "first_name"
+    t.string "last_name"
     t.string "password_digest"
-    t.bigint "role_id", null: false
-    t.string "status"
+    t.column "role", "enum('user','admin','member')", default: "user", null: false
+    t.column "status", "enum('active','deleted')", default: "active", null: false
     t.datetime "updated_at", null: false
     t.string "username"
-    t.index ["role_id"], name: "index_users_on_role_id"
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["first_name", "last_name"], name: "index_users_on_first_name_and_last_name", type: :fulltext
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "book_categories", "books"
@@ -107,7 +95,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_074659) do
   add_foreign_key "book_views", "books"
   add_foreign_key "book_views", "users"
   add_foreign_key "books", "authors"
-  add_foreign_key "role_permissions", "permissions"
-  add_foreign_key "role_permissions", "roles"
-  add_foreign_key "users", "roles"
+  add_foreign_key "tokens", "users"
 end

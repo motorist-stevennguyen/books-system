@@ -1,14 +1,17 @@
 source "https://rubygems.org"
 
-gem "rails_cursor_pagination"
-
 gem "bcrypt"
 gem "jwt"
+gem "pundit"
+gem "redis"
+gem "mysql2"
+gem "active_model_serializers"
+gem "rails_cursor_pagination"
+gem "sidekiq"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3", ">= 8.1.3.1"
 # Use mysql as the database for Active Record
-gem "mysql2"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -41,6 +44,7 @@ gem "image_processing", "~> 1.2"
 # gem "rack-cors"
 
 group :development, :test do
+  gem "faker"
   gem "dotenv-rails"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
