@@ -21,19 +21,18 @@ module Api
 
       def show
         authorize Author
-        render json: author
+        render json: @author
       end
 
       def update
         authorize author
-        puts author, "Author IS"
         author.update(author_params)
-        render json: author
+        render json: @author
       end
 
       def destroy
-        authorize author
-        author.destroy
+        authorize @author
+        @author.destroy
         head :no_content
       end
 

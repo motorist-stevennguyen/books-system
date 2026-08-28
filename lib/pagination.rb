@@ -1,10 +1,14 @@
 module Pagination
   extend ActiveSupport::Concern
-      included do
-      end
-
       def paginate_params(*params_name)
-        params.permit(:page, :take, :sorted, :order_by, :keywords, *params_name).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "desc" })
+        valid = params.permit(:page, :take, :sorted, :order_by, :keywords, *params_name).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "desc" })
+        take = valid[:take].to_i || 0
+
+        raise BusinessException.new(ErrorMessages::PARAMS_IS_INVALID, "sorted(#{valid[:sorted]})") unless Consts::SortedEnum.valid?(valid[:sorted])
+        raise BusinessException.new(ErrorMessages::PARAMS_IS_INVALID, "order_by(#{valid[:order_by]})") unless Consts::OrderBy.valid?(valid[:order_by])
+        raise BusinessException.new(ErrorMessages::PARAMS_IS_INVALID, "take(#{valid[:take]}) must be in 1..100") if take > 100 || take.to_i < 1
+
+        valid
       end
 
       class_methods do

@@ -1,5 +1,6 @@
 class Book < ApplicationRecord
   include Cacheable
+  include Scopes
 
   belongs_to :author
 

@@ -10,6 +10,18 @@ class CreateUsers < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
+
     add_index :users, [ :email, :username, :first_name, :last_name ], type: :fulltext
+    execute <<-SQL
+        ALTER TABLE users
+        ADD COLUMN status ENUM('active', 'deleted')
+        NOT NULL DEFAULT 'active'
+      SQL
+
+      execute <<-SQL
+        ALTER TABLE users
+        ADD COLUMN role ENUM('user', 'admin', 'member')
+        NOT NULL DEFAULT 'user'
+      SQL
   end
 end

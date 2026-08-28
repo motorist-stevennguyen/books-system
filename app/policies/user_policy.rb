@@ -26,6 +26,14 @@ class UserPolicy < ApplicationPolicy
     user.role == RoleConst::ADMIN
   end
 
+  def growth?
+    user.role == RoleConst::ADMIN
+  end
+
+  def chart?
+    user.role == RoleConst::ADMIN
+  end
+
   def history?
     true
   end

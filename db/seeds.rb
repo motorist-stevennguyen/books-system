@@ -81,6 +81,7 @@ statuses = %w[public deleted private]
 languages = %w[English Spanish French German Japanese]
 
 books_data = Array.new(1000) do
+  random_date = rand(6.months.ago..Time.current)
   {
     author_id: author_ids.sample,
     title: Faker::Book.title,
@@ -91,8 +92,8 @@ books_data = Array.new(1000) do
     published_date: Faker::Date.between(from: 20.years.ago, to: Date.today),
     status: statuses.sample,
     cover_url: Faker::LoremFlickr.image(size: "300x400"),
-    created_at: timestamp,
-    updated_at: timestamp
+    created_at: random_date,
+    updated_at: random_date
   }
 end
 
@@ -115,14 +116,14 @@ end
 
 BookCategory.insert_all(book_categories_data)
 
-# book_views_data = Array.new(150) do
-#   {
-#     book_id: book_ids.sample,
-#     user_id: rand(1..50), # Assumes mock user IDs 1 to 50
-#     viewed_at: Faker::Time.between(from: 6.months.ago, to: Time.current),
-#     created_at: timestamp,
-#     updated_at: timestamp
-#   }
-# end
+book_views_data = Array.new(250) do
+  random_date = rand(6.months.ago..Time.current)
+  {
+    book_id: book_ids.sample,
+    user_id: rand(1..50),
+    created_at: random_date,
+    updated_at: random_date
+  }
+end
 
-# BookView.insert_all(book_views_data)
+BookView.insert_all(book_views_data)

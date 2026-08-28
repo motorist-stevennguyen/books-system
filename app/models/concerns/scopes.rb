@@ -1,50 +1,52 @@
 module Scopes
   extend ActiveSupport::Concern
   RANGE_MAP = {
-    Consts::PeriodEnum::DAY => ->(ref) { ref.beginning_of_day..ref.end_of_day },
-    Consts::PeriodEnum::WEEK => ->(ref) { ref.beginning_of_week..ref.end_of_week },
-    Consts::PeriodEnum::MONTH => ->(ref) { ref.beginning_of_month..ref.end_of_month },
-    Consts::PeriodEnum::QUARTER => ->(ref) { ref.beginning_of_quarter..ref.end_of_quarter },
-    Consts::PeriodEnum::YEAR => ->(ref) { ref.beginning_of_year..ref.end_of_year }
+    Consts::PeriodEnum::DAY => ->(date_val) { date_val.beginning_of_day..date_val.end_of_day },
+    Consts::PeriodEnum::WEEK => ->(date_val) { date_val.beginning_of_week..date_val.end_of_week },
+    Consts::PeriodEnum::MONTH => ->(date_val) { date_val.beginning_of_month..date_val.end_of_month },
+    Consts::PeriodEnum::QUARTER => ->(date_val) { date_val.beginning_of_quarter..date_val.end_of_quarter },
+    Consts::PeriodEnum::YEAR => ->(date_val) { date_val.beginning_of_year..date_val.end_of_year }
   }.freeze
   PREVIOUS_MAP = {
-    Consts::PeriodEnum::DAY => ->(ref) { ref - 1.day },
-    Consts::PeriodEnum::WEEK => ->(ref) { ref - 1.week },
-    Consts::PeriodEnum::MONTH => ->(ref) { ref - 1.month },
-    Consts::PeriodEnum::QUARTER => ->(ref) { ref - 3.months },
-    Consts::PeriodEnum::YEAR => ->(ref) { ref - 1.year }
+    Consts::PeriodEnum::DAY => ->(from_date) { from_date - 1.day },
+    Consts::PeriodEnum::WEEK => ->(from_date) { from_date - 1.week },
+    Consts::PeriodEnum::MONTH => ->(from_date) { from_date - 1.month },
+    Consts::PeriodEnum::QUARTER => ->(from_date) { from_date - 3.months },
+    Consts::PeriodEnum::YEAR => ->(from_date) { from_date - 1.year }
   }.freeze
   DATE_FORMAT = {
-    Consts::PeriodEnum::DAY     => "%H:00",
-    Consts::PeriodEnum::WEEK    => "%a %d",
-    Consts::PeriodEnum::MONTH   => "%d %b",
-    Consts::PeriodEnum::QUARTER => "%x-W%v",
-    Consts::PeriodEnum::YEAR    => "%b"
+    Consts::PeriodEnum::DAY     => "%H:00", # 00
+    Consts::PeriodEnum::WEEK    => "%a-%d", # Fri-01
+    Consts::PeriodEnum::MONTH   => "%d-%m", # 01-01
+    Consts::PeriodEnum::QUARTER => "%x-Week%v", # 01-Week01
+    Consts::PeriodEnum::YEAR    => "%b" # 2026
   }.freeze
 
 
   included do
+    scope :growth, ->(relation, period) {  relation.stats_growth(period)  }
+    scope :chart, ->(relation, period) {  relation.time_series(period)  }
+    scope :destroy_many, ->(ids) { where(id: ids).destroy_all }
     scope :count_current, ->(range) {
-      where(:created_at => range).count
+      where(created_at: range).count
     }
     scope :count_before, ->(range) {
-      where(:created_at => range).count
+      where(created_at: range).count
     }
-    scope :growth, ->(relation, period) {  relation.call(period)  }
-    scope :chart, ->(relation, period) {  relation.time_series(period)  }
   end
 
   class_methods do
     Growth = Struct.new(:title, :percent_growth, :total, :current, keyword_init: true)
     TimeSeries = Struct.new(:title, :from, :to, :max, :min, :data, keyword_init: true)
     Series =  Struct.new(:labels, :values, keyword_init: true)
-    def time_series(period, from = nil, to = nil)
+
+    def time_series(period)
       format = DATE_FORMAT[period]
-      range = from && to ? Time.zone.parse(from)..Time.zone.parse(to) : self.current(period)
+      range = current(period)
       grouped = relation
-        .where(:created_at => range)
-        .group(Arel.sql("DATE_FORMAT(created_at, '#{format}')"))
-        .order(Arel.sql("MIN(created_at)"))
+        .where(created_at: range)
+        .group("DATE_FORMAT(created_at, '#{format}')")
+        .order("MIN(created_at)")
         .count
 
       labels = grouped.keys
@@ -62,10 +64,12 @@ module Scopes
       Rails.logger.error("ChartStat error: #{e.message}")
       TimeSeries.new(title: "Title", data: Series.new(labels: [], values: []))
     end
-    def call(period)
-      current_count = self.count_current(self.current(period))
-      before_count  = self.count_current(self.previous(period))
+
+    def stats_growth(period)
+      current_count = count_current(current(period))
+      before_count  = count_current(previous(period))
       percent_growth = before_count.zero? ? 100.0 : ((current_count - before_count).to_f / before_count) * 100
+
       Growth.new(
         title: "Growth",
         percent_growth: percent_growth.round(2),
@@ -78,26 +82,26 @@ module Scopes
     end
 
     private
-    def current(period, reference_time = Time.current)
+    def current(period)
       raise BusinessException.new("400|Invalid period: #{period}") unless Consts::PeriodEnum.valid?(period)
 
-      RANGE_MAP[period].call(reference_time)
+      RANGE_MAP[period].call(Time.now)
     end
-    def previous(period, reference_time = Time.current)
+    def previous(period)
       raise BusinessException.new("400|Invalid period: #{period}") unless Consts::PeriodEnum.valid?(period)
 
-      previous_ref = PREVIOUS_MAP[period].call(reference_time)
-      RANGE_MAP[period].call(previous_ref)
+      previous_from = PREVIOUS_MAP[period].call(Time.now)
+      RANGE_MAP[period].call(previous_from)
     end
     def max_point(labels, values)
       return nil if values.empty?
-      idx = values.each_with_index.max_by { |v, _| v }[1]
-      { label: labels[idx], value: values[idx] }
+      max_point_index = values.each_with_index.max_by { |idx, _| idx }[1]
+      { label: labels[max_point_index], value: values[max_point_index] }
     end
     def min_point(labels, values)
       return nil if values.empty?
-      idx = values.each_with_index.min_by { |v, _| v }[1]
-      { label: labels[idx], value: values[idx] }
+      min_point_index = values.each_with_index.min_by { |idx, _| idx }[1]
+      { label: labels[min_point_index], value: values[min_point_index] }
     end
   end
 end

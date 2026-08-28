@@ -13,6 +13,12 @@ class CreateBooks < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
+    execute <<-SQL
+      ALTER TABLE books
+      ADD COLUMN status ENUM('public', 'private', 'deleted')
+      NOT NULL DEFAULT 'public'
+    SQL
+
     add_index :books, :code, unique: true
     add_index :books, :title, type: :fulltext
   end

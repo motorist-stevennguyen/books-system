@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_062812) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -18,7 +18,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
     t.string "name"
     t.string "nationality"
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_authors_on_name"
+    t.index ["id"], name: "index_authors_on_id", unique: true
+    t.index ["name"], name: "index_authors_on_name", type: :fulltext
   end
 
   create_table "book_categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -31,12 +32,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
   end
 
   create_table "book_views", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "book_id", null: false
+    t.bigint "book_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.timestamp "viewed_at"
-    t.index ["book_id", "viewed_at"], name: "index_book_views_on_book_id_and_viewed_at"
     t.index ["book_id"], name: "index_book_views_on_book_id"
     t.index ["user_id"], name: "index_book_views_on_user_id"
   end
@@ -72,6 +71,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_27_021550) do
     t.string "hashed_token"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["hashed_token"], name: "index_tokens_on_hashed_token", unique: true
     t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 

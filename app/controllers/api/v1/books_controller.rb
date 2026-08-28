@@ -3,29 +3,47 @@ module Api
     class BooksController < Api::V1::ApiV1Controller
       before_action :set_book, only: [ :show, :update, :destroy ]
 
-      after_action :verify_authorized, except: [ :index ]
+      after_action :verify_authorized, except: [ :index, :growth, :chart, :destroy_many ]
       after_action :verify_policy_scoped, only: [ :index ]
 
+      def growth
+        authorize User
+          period = params[:period] || Consts::PeriodEnum::MONTH
+          puts period
+          stat = Book.growth(Book, period)
+          render json: stat.to_h
+      end
+
+      def chart
+        authorize User
+        period = params[:period] || Consts::PeriodEnum::MONTH
+        stat = Book.chart(Book, period)
+        render json: stat.to_h
+      end
 
       def index
         opts = paginate_params
         keywords = opts[:keywords]
         evaluated = keywords.blank? ? policy_scope(Book) : policy_scope(Book).search(keywords)
 
-        opts[:order_by] = "books.created_at"
+        opts[:order_by] = "books.#{opts[:order_by]}"
 
-        data, meta = self.class.paginator(evaluated.eager_load(:author), opts) do |item|
+        data, meta = BooksController.paginator(evaluated.eager_load(:author), opts) do |item|
           BookSerializer.new(item, scope: { include: [ :author ] })
         end
 
         render json: { data: data, meta: meta }, adapter: nil
+
+      rescue => e
+        raise BusinessException.new("400|#{e.message}")
       end
 
       def create
         authorize Book
         item = Book.new(item_params)
-        render json: item if item.save
-        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD)
+        render json: item if item.save!
+      rescue => e
+        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD, e&.message)
       end
 
       def show
@@ -45,7 +63,15 @@ module Api
       def destroy
         authorize @book
         @book.update_attribute(:status, StatusConst::DELETED)
-        render json: @book
+        head :no_content
+      end
+
+      def destroy_many
+        authorize Book
+        ids = delete_ids[:ids].to_a || []
+        raise BusinessException.new(ErrorMessages::PARAMS_IS_INVALID) if ids.length < 1
+        Book.destroy_many(ids)
+        head :no_content
       end
 
       private
@@ -64,6 +90,12 @@ module Api
         params
         .require(:book)
         .permit(:title, :language, :pages, :published_date, :author_id, :cover_url, :description, :status, category_ids: [])
+      end
+
+      def delete_ids
+        params
+        .require(:delete)
+        .permit(ids: [])
       end
     end
   end

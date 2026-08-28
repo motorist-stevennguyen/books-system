@@ -1,10 +1,25 @@
 module Api
   module V1
     class UsersController < Api::V1::ApiV1Controller
-      before_action :set_user, only: [ :show, :destroy, :update, :clear_history ]
+      before_action :set_user, only: [ :show, :destroy, :update ]
       after_action :verify_authorized
 
       # ADMIN
+      def growth
+          authorize User
+          period = params[:period] || Consts::PeriodEnum::MONTH
+          stat = User.growth(User, period)
+          render json: stat.to_h
+      end
+
+      def chart
+          authorize User
+          period = params[:period] || Consts::PeriodEnum::MONTH
+          puts period
+          stat = User.chart(User.active, period)
+          render json: stat.to_h
+      end
+
       def index
         authorize User
         keywords = paginate_params[:keywords]
@@ -17,20 +32,26 @@ module Api
       end
 
       def update
-          authorize user
-          user.update(user_params)
-          render json: user
+          authorize @user
+          @user.update(user_params)
+          render json: @user
       end
 
       def show
         authorize @current_user
-        render json: user
+        render json: @user
+      end
+
+      def disabled
+        authorize User
+        user.update_attribute(status: StatusConst::DELETED)
+        head :no_content
       end
 
       def destroy
-        authorize user
-        user.destroy
-        render json: { message: "Done" }
+        authorize User
+        @user.destroy
+        head :no_content
       end
 
       # USER
@@ -39,10 +60,10 @@ module Api
         @current_user.update(profile_params)
         render json: @current_user
       end
+
       def profile
         authorize User
-        user = User.find_by_email_or_username(val: current_user[:username])
-        render json: user
+        render json: current_user
       end
 
       private

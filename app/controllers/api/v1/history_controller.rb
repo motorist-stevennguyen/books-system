@@ -1,12 +1,27 @@
 module Api
   module V1
     class HistoryController < Api::V1::ApiV1Controller
-      before_action :set_history, only: [ :show, :destroy, :destroy_all ]
+      before_action :set_history, only: [ :show, :destroy ]
       after_action :verify_authorized
 
-      # ADMIN
-      def index
+      def growth
         authorize User
+          period = params[:period] || Consts::PeriodEnum::MONTH
+          puts period
+          stat = BookView.growth(BookView, period)
+          render json: stat.to_h
+      end
+
+      def chart
+        authorize User
+          period = params[:period] || Consts::PeriodEnum::MONTH
+          puts period
+          stat = BookView.chart(BookView.active, period)
+          render json: stat.to_h
+      end
+
+      def index
+        authorize BookView
         opts = paginate_params
         keywords = opts[:keywords]
         viewed_books = BookView.load_book.by_uid(current_user.id)
@@ -21,18 +36,18 @@ module Api
       end
 
       def show
-        authorize book_view
-        render json: book_view
+        authorize @book_view
+        render json: @book_view
       end
 
       def destroy
-        authorize book_view
-        book_view.destroy
+        authorize @book_view
+        @book_view.destroy
         head :no_content
       end
 
       def destroy_all
-        authorize User
+        authorize BookView
         BookView.clear_history(current_user.id)
         head :no_content
       end
@@ -40,7 +55,7 @@ module Api
       private
       def set_history
         id = params[:id]
-        is_exists = BookView.by_id(id: id)
+        is_exists = BookView.by_id(id).first
         raise BusinessException.new(ErrorMessages::RESOURCE_NOT_FOUND, id) unless is_exists.present?
         @book_view = is_exists
       end

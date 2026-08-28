@@ -1,4 +1,39 @@
 module Consts
+  module PeriodEnum
+    DAY     = "day"
+    WEEK    = "week"
+    MONTH   = "month"
+    QUARTER = "quarter"
+    YEAR    = "year"
+
+    ALL = [ DAY, WEEK, MONTH, QUARTER, YEAR ].freeze
+
+    def self.valid?(value)
+      ALL.include?(value)
+    end
+  end
+  module SortedEnum
+        ASC = "asc"
+        DESC = "desc"
+
+        ALL = [ ASC, DESC ].freeze
+
+        def self.valid?(value)
+          ALL.include?(value)
+        end
+  end
+  module OrderBy
+        CREATED_AT = "created_at"
+        UPDATED_AT = "updated_at"
+        ID = "id"
+
+        ALL = [ CREATED_AT, UPDATED_AT, ID ].freeze
+
+        def self.valid?(value)
+          ALL.include?(value)
+        end
+  end
+
   module ConfigData
     REDIS_CONFIG = {
       url: ENV.fetch("REDIS_URL", "redis://localhost:6379"),
@@ -15,19 +50,6 @@ module Consts
       timeout: 5
     ) do
       Redis.new(REDIS_CONFIG)
-    end
-  end
-  module PeriodEnum
-    DAY     = "day"
-    WEEK    = "week"
-    MONTH   = "month"
-    QUARTER = "quarter"
-    YEAR    = "year"
-
-    ALL = [DAY, WEEK, MONTH, QUARTER, YEAR].freeze
-
-    def self.valid?(value)
-      ALL.include?(value)
     end
   end
 end

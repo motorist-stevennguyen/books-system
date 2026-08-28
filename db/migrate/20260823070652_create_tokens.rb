@@ -7,5 +7,7 @@ class CreateTokens < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
+
+    add_index :tokens, :hashed_token, unique: true
   end
 end

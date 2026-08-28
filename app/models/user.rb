@@ -13,8 +13,8 @@ class User < ApplicationRecord
 
 
   scope :scp_by_id, ->(id) { where(id: id) }
-  scope :active, -> {where(status: StatusConst::ACTIVE)}
-  scope :scp_by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
+  scope :active, -> { where(status: StatusConst::ACTIVE) }
+  scope :by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
   scope :search_by_username_email, ->(keywords) { where("MATCH(first_name, last_name, username, email) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
 
   validates :username, uniqueness: { case_sensitive: false }
@@ -27,10 +27,10 @@ class User < ApplicationRecord
   def self.find_by_email_or_username(val:, cacheable: false)
     if cacheable
       fetch("#{table_name}:#{val}") do
-        User.scp_by_email_or_username(val).first
+        User.by_email_or_username(val).first
       end
     else
-      User.scp_by_email_or_username(val).first
+      User.by_email_or_username(val).first
     end
   end
 

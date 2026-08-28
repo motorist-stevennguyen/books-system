@@ -8,7 +8,7 @@ class AuthorPolicy < ApplicationPolicy
   end
 
   def show?
-    user.role == RoleConst::ADMIN
+    true
   end
 
   def update?

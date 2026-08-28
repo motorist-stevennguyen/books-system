@@ -18,6 +18,18 @@ class BookPolicy < ApplicationPolicy
     attr_reader :user, :scope
   end
 
+  def destroy_many?
+        user.role == RoleConst::ADMIN
+  end
+
+  def growth?
+    user.role == RoleConst::ADMIN
+  end
+
+  def chart?
+    user.role == RoleConst::ADMIN
+  end
+
   def index?
     true
   end

@@ -8,12 +8,12 @@ module Api
       before_action :authenticated_request
 
       rescue_from StandardError do |exception|
-        case exception.instance_of?(Pundit::NotAuthorizedError)
+        case exception.instance_of?(BusinessException)
+
         when true
-          message, code = ErrorMessages::ACCESS_DENIED.split("|")
-          render json: { error: message, code: code }, status: :bad_request
-        else
           render json: { error: exception.message, code: exception.code.to_i }, status: :bad_request
+        else
+          render json: { error: exception.message, code: "400" }, status: :bad_request
         end
       end
 
@@ -22,7 +22,7 @@ module Api
       attr_reader :current_user
 
       def authenticated_request
-        @current_user = ApiV1Controller.authenticated(headers: request.headers, at: request.headers["Authorization"]&.split(" ")&.last)
+        @current_user = ApiV1Controller.authenticated(request.headers)
         Rails.logger.info("[#{self.class}] #{current_user[:uid]} | #{current_user.role} - #{current_user[:email]}")
       end
     end
