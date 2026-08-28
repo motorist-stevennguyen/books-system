@@ -13,8 +13,9 @@ module Api
       def create
         authorize Book
         item = Category.new(category_params)
-        render json: item if item.save
-        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD)
+        render json: item if item.save!
+      rescue => e
+        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD, "#{e&.message}")
       end
 
       def show

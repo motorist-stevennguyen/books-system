@@ -36,6 +36,7 @@ Rails.application.routes.draw do
         collection do
           get :profile, action: :profile
           patch :profile, action: :update_profile
+          post :disabled, action: :disabled
         end
       end
       resources :books, only: [ :index, :show ]

@@ -10,6 +10,10 @@ class UserPolicy < ApplicationPolicy
     end
   end
 
+  def disabled?
+      true
+  end
+
   def update?
     user.role == RoleConst::ADMIN
   end

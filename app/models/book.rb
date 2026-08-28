@@ -25,8 +25,8 @@ class Book < ApplicationRecord
   scope :join_categories, -> { joins("LEFT JOIN categories cat ON cat.id = bc.category_id") }
   scope :join_book_categories, -> { joins("LEFT JOIN book_categories bc ON bc.book_id = #{table_name}.id") }
 
-  scope :search_by_code, ->(keywords) { where("code LIKE ?", "%#{keywords}%") }
-  scope :search_by_author, ->(keywords) { where(author_id: Author.where("name LIKE ?", "%#{keywords}%")) }
+  scope :search_by_code, ->(keywords) { where("code LIKE ?", "#{keywords}%") }
+  scope :search_by_author, ->(keywords) { where(author_id: Author.where("name LIKE ?", "#{keywords}%")) }
   scope :search_by_name, ->(keywords) { where("MATCH(title) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
 
   def self.find_by_id(id)

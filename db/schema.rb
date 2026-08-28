@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_062812) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_070652) do
   create_table "authors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "bio"
     t.date "birth_date"
@@ -85,7 +85,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_062812) do
     t.column "status", "enum('active','deleted')", default: "active", null: false
     t.datetime "updated_at", null: false
     t.string "username"
-    t.index ["email", "username", "first_name", "last_name"], name: "index_users_on_email_and_username_and_first_name_and_last_name", type: :fulltext
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["first_name", "last_name"], name: "index_users_on_first_name_and_last_name", type: :fulltext
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "book_categories", "books"

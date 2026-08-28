@@ -20,6 +20,7 @@ module Authenticator
 
       existing_rt = Token.find_by_token(rt)
       raise BusinessException.new(ErrorMessages::INVALID_TOKEN) unless existing_rt.present?
+      raise BusinessException.new(ErrorMessages::RESOURCE_NOT_AVAILABLE, "#{existing_rt.user.email} is deleted") unless existing_rt.user.status == StatusConst::ACTIVE
       existing_rt.user
     end
   end

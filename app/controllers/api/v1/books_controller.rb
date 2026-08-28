@@ -3,11 +3,11 @@ module Api
     class BooksController < Api::V1::ApiV1Controller
       before_action :set_book, only: [ :show, :update, :destroy ]
 
-      after_action :verify_authorized, except: [ :index, :growth, :chart, :destroy_many ]
+      after_action :verify_authorized, except: [ :index ]
       after_action :verify_policy_scoped, only: [ :index ]
 
       def growth
-        authorize User
+          authorize Book
           period = params[:period] || Consts::PeriodEnum::MONTH
           puts period
           stat = Book.growth(Book, period)

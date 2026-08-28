@@ -15,7 +15,8 @@ class User < ApplicationRecord
   scope :scp_by_id, ->(id) { where(id: id) }
   scope :active, -> { where(status: StatusConst::ACTIVE) }
   scope :by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
-  scope :search_by_username_email, ->(keywords) { where("MATCH(first_name, last_name, username, email) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
+  scope :search_by_username, ->(val) { where("username OR email LIKE ?", "#{val}%") }
+  scope :search_by_text, ->(keywords) { where("MATCH(first_name, last_name) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
 
   validates :username, uniqueness: { case_sensitive: false }
   validates :email, email: true, uniqueness: { case_sensitive: false }
@@ -35,7 +36,7 @@ class User < ApplicationRecord
   end
 
   def self.search(keywords)
-    User.search_by_username_email(keywords)
+    User.search_by_text(keywords).or(self.search_by_username(keywords))
   end
 
   def self.find_by_id(id:, cacheable: false)

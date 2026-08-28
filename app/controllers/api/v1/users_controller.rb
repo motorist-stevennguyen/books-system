@@ -44,7 +44,7 @@ module Api
 
       def disabled
         authorize User
-        user.update_attribute(status: StatusConst::DELETED)
+        current_user.update(status: StatusConst::DELETED)
         head :no_content
       end
 
