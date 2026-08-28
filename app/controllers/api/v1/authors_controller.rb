@@ -2,34 +2,38 @@ module Api
   module V1
     class AuthorsController < Api::V1::ApiV1Controller
       before_action :set_author, only: [ :show, :destroy, :update ]
-      after_action :verify_policy_scoped, only: [ :index ]
 
       def create
+        authorize Author
+        item = Author.new(author_params)
+        render json: item if item.save
+        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD)
       end
 
       def index
-        evaludated = policy_scope(Author)
-        data, meta = self.class.paginator(evaludated, filterd_params) do |item|
+        authorize Author
+        data, meta = AuthorsController.paginator(Author, paginate_params) do |item|
          AuthorSerializer.new(item)
         end
 
-        render json: { data: data, meta: meta }, adapter: nil
+        render json: { data: data, meta: meta }
       end
 
       def show
-        render json: @author
+        authorize Author
+        render json: author
       end
 
       def update
-        authorize @author
-        puts @author, "Author IS"
-        @author.update(author_params)
-        render json: @author
+        authorize author
+        puts author, "Author IS"
+        author.update(author_params)
+        render json: author
       end
 
       def destroy
-        authorize @author
-        @author.destroy
+        authorize author
+        author.destroy
         head :no_content
       end
 

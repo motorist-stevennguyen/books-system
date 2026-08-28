@@ -3,7 +3,7 @@ module Pagination
       included do
       end
 
-      def filterd_params(*params_name)
+      def paginate_params(*params_name)
         params.permit(:page, :take, :sorted, :order_by, :keywords, *params_name).reverse_merge({ keywords: "", page: 1, take: 5, order_by: "created_at", sorted: "desc" })
       end
 

@@ -15,17 +15,33 @@ Author.destroy_all
 BookView.destroy_all
 Category.destroy_all
 
-admin_role_id = 0
-user_role_id = 0
+User.create(email: "stevennguyen@motorist.com", password: "123Steven", confirmation_password: "123Steven", username: "stevennguyen", first_name: "steven", last_name: "nguyen", role: RoleConst::ADMIN)
+User.create(email: "locnguyen01@gmail.com", password: "123Steven", confirmation_password: "123Steven", username: "locnguyen01", first_name: "alex", last_name: "vinh", role: RoleConst::USER)
+User.create(email: "locnguyen02@gmail.com", password: "123Steven", confirmation_password: "123Steven", username: "locnguyen02", first_name: "erik", last_name: "cao", role: RoleConst::USER)
+User.create(email: "locnguyen03@gmail.com", password: "123Steven", confirmation_password: "123Steven", username: "locnguyen03", first_name: "johny", last_name: "pham", role: RoleConst::USER)
+User.create(email: "locnguyen04@gmail.com", password: "123Steven", confirmation_password: "123Steven", username: "locnguyen04", first_name: "tony", last_name: "han", role: RoleConst::USER)
+User.create(email: "locnguyen05@gmail.com", password: "123Steven", confirmation_password: "123Steven", username: "locnguyen05", first_name: "niko", last_name: "teo", role: RoleConst::USER)
+User.create(email: "locnguyen06@gmail.com", password: "123Steven", confirmation_password: "123Steven", username: "locnguyen06", first_name: "tony", last_name: "nguyen", role: RoleConst::USER)
 
-User.create(email: "stevennguyen@motorist.com", password: "123Steven", username: "stevennguyen", first_name: "steven", last_name: "nguyen", role: RoleConst::ADMIN)
-User.create(email: "locnguyen01@gmail.com", password: "123Steven", username: "locnguyen01", first_name: "alex", last_name: "vinh", role: RoleConst::USER)
-User.create(email: "locnguyen02@gmail.com", password: "123Steven", username: "locnguyen02", first_name: "erik", last_name: "cao", role: RoleConst::USER)
-User.create(email: "locnguyen03@gmail.com", password: "123Steven", username: "locnguyen03", first_name: "johny", last_name: "pham", role: RoleConst::USER)
-User.create(email: "locnguyen04@gmail.com", password: "123Steven", username: "locnguyen04", first_name: "tony", last_name: "han", role: RoleConst::USER)
-User.create(email: "locnguyen05@gmail.com", password: "123Steven", username: "locnguyen05", first_name: "niko", last_name: "teo", role: RoleConst::USER)
-User.create(email: "locnguyen06@gmail.com", password: "123Steven", username: "locnguyen06", first_name: "tony", last_name: "nguyen", role: RoleConst::USER)
 
+100.times do |i|
+  # Spread users randomly across the last 6 months
+  random_date = rand(6.months.ago..Time.current)
+
+  user = User.new(
+    email: Faker::Internet.unique.email,
+    password: "123Steven",
+    confirmation_password: "123Steven",
+    username: Faker::Internet.unique.username(specifier: 5..10),
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name,
+    role: RoleConst::USER,
+    created_at: random_date
+  )
+
+  user.save!
+  # user.update_column(:created_at, random_date)
+end
 
 timestamp = Time.current
 

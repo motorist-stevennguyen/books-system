@@ -17,4 +17,17 @@ module Consts
       Redis.new(REDIS_CONFIG)
     end
   end
+  module PeriodEnum
+    DAY     = "day"
+    WEEK    = "week"
+    MONTH   = "month"
+    QUARTER = "quarter"
+    YEAR    = "year"
+
+    ALL = [DAY, WEEK, MONTH, QUARTER, YEAR].freeze
+
+    def self.valid?(value)
+      ALL.include?(value)
+    end
+  end
 end

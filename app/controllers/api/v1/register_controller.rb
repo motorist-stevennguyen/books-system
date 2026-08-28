@@ -7,12 +7,11 @@ module Api
 
       def create
         user = User.new(register_params)
-        if user.save!
+        if user.save
           access_token = self.class.create_tokens(user)
           render json: { access_token: access_token.token, expires_at: access_token.expires_at }, status: :ok
         end
-      rescue => e
-        raise BusinessException.new("400|#{e.record.errors.full_messages.join(', ')}")
+        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD)
       end
 
       private

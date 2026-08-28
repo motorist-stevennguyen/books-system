@@ -1,4 +1,5 @@
 module ErrorMessages
+  FAILED_TO_SAVE_RECORD="400|Failed to save a new record"
   USER_NOT_FOUND = "400|User not found"
   INVALID_CREDENTIALS = "401|Invalid credentials"
   UNAUTHORIZED_ACCESS = "400|Unauthorized access"

@@ -28,6 +28,6 @@ class BookSerializer < ActiveModel::Serializer
   end
 
   def include_author?
-    self.class.include_attr?(scope, :author)
+    BookSerializer.include_attr?(scope, :author)
   end
 end

@@ -10,7 +10,7 @@ module Api
         val = params[:email] || params[:username]
         raise BusinessException.new("400|Username or email is required") if val.blank?
 
-        user = User.find_by_email_or_username(val: val.downcase, cacheable: true)
+        user = User.find_by_email_or_username(val: val.downcase)
 
         raise BusinessException.new(ErrorMessages::INVALID_CREDENTIALS) unless user&.authenticate(params[:password])
         access_token = self.class.create_tokens(user)

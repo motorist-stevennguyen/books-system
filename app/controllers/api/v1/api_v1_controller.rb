@@ -22,7 +22,7 @@ module Api
       attr_reader :current_user
 
       def authenticated_request
-        @current_user = self.class.authenticated(headers: request.headers, at: request.headers["Authorization"]&.split(" ")&.last)
+        @current_user = ApiV1Controller.authenticated(headers: request.headers, at: request.headers["Authorization"]&.split(" ")&.last)
         Rails.logger.info("[#{self.class}] #{current_user[:uid]} | #{current_user.role} - #{current_user[:email]}")
       end
     end

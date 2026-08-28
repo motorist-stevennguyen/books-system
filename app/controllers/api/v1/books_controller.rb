@@ -8,10 +8,11 @@ module Api
 
 
       def index
-        opts = filterd_params
+        opts = paginate_params
         keywords = opts[:keywords]
-        opts[:order_by] = "books.created_at"
         evaluated = keywords.blank? ? policy_scope(Book) : policy_scope(Book).search(keywords)
+
+        opts[:order_by] = "books.created_at"
 
         data, meta = self.class.paginator(evaluated.eager_load(:author), opts) do |item|
           BookSerializer.new(item, scope: { include: [ :author ] })
@@ -22,10 +23,9 @@ module Api
 
       def create
         authorize Book
-        book = Book.new(book_params)
-        book.save!
-
-        render json: book
+        item = Book.new(item_params)
+        render json: item if item.save
+        raise BusinessException.new(ErrorMessages::FAILED_TO_SAVE_RECORD)
       end
 
       def show
@@ -38,7 +38,7 @@ module Api
 
       def update
         authorize @book
-        @book.update(book_params)
+        @book.update(item_params)
         render json: @book
       end
 
@@ -60,7 +60,7 @@ module Api
         @book = exists
       end
 
-      def book_params
+      def item_params
         params
         .require(:book)
         .permit(:title, :language, :pages, :published_date, :author_id, :cover_url, :description, :status, category_ids: [])

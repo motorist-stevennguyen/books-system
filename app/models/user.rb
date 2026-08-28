@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-  include RequiredNewUserValidator
   include Cacheable
+  include Scopes
 
   has_secure_password
 
@@ -13,8 +13,13 @@ class User < ApplicationRecord
 
 
   scope :scp_by_id, ->(id) { where(id: id) }
+  scope :active, -> {where(status: StatusConst::ACTIVE)}
   scope :scp_by_email_or_username, ->(val) { where(username: val).or(where(email: val)) }
   scope :search_by_username_email, ->(keywords) { where("MATCH(first_name, last_name, username, email) AGAINST(? IN BOOLEAN MODE)", "#{keywords}*") }
+
+  validates :username, uniqueness: { case_sensitive: false }
+  validates :email, email: true, uniqueness: { case_sensitive: false }
+  validates_with RegisterValidator, if: :new_record?
 
   after_initialize :after_initial_callback, if: :new_record?
 
