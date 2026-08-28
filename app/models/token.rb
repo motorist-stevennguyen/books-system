@@ -3,23 +3,23 @@ class Token < ApplicationRecord
   include Tokens
 
   belongs_to :user
-  before_create :set_crypted_token
+  before_create :set_hashed_token
 
   attr_accessor :token
 
   scope :active, -> { where("expires_at > ?", Time.now) }
-  scope :by_crypted_token, ->(crypted_token) { where(crypted_token: crypted_token) }
+  scope :by_hashed_token, ->(hashed_token) { where(hashed_token: hashed_token) }
 
   def self.find_by_token(raw_token)
     return nil if raw_token.blank?
-    crypted = Digest::SHA256.hexdigest(raw_token)
-    active.eager_load(:user).by_crypted_token(crypted).first
+    hashed = Digest::SHA256.hexdigest(raw_token)
+    active.eager_load(:user).by_hashed_token(hashed).first
   end
 
   private
-  def set_crypted_token
+  def set_hashed_token
     self.token = SecureRandom.hex(32)
-    self.crypted_token = Digest::SHA256.hexdigest(token)
+    self.hashed_token = Digest::SHA256.hexdigest(token)
     self.expires_at ||= self.class.access_token_expiry.from_now
   end
 end
