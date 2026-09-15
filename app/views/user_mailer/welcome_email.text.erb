@@ -1,6 +1,25 @@
-Welcome to example.com!
-===============================================
+Foodie
 
-You have successfully signed up for example.com.
+Hi <%= @user.first_name.presence || "there" %>,
 
-To login to the site, follow this link: <%= @url %>.
+Thanks for creating a Foodie account. Here's what's waiting for you:
+
+Recipe of the Week
+Fresh recipes picked by our editors, delivered every Monday.
+
+Restaurant Deals
+Discounts at restaurants near you, updated weekly.
+
+Personalized Meal Plans
+Meal plans based on your goals and dietary needs.
+
+Grocery Delivery
+Order ingredients for tonight's recipe in two taps.
+
+Cooking Tips & Tricks
+Short videos and notes from home cooks and chefs.
+
+Dietary Preferences
+Tell us about allergies or diets like vegan or keto.
+
+Log in: <%= @url %>

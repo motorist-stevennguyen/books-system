@@ -1,7 +1,3 @@
-<span style="display:none; font-size:1px; color:#F7F5F1; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
-	Thanks for creating a <%= UserMailer::BRAND_NAME %> account.
-</span>
-
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F7F5F1;">
 	<tr>
 		<td align="center" style="padding:40px 16px;">
@@ -18,15 +14,22 @@
 						<p style="margin:0 0 16px; font-size:15px; line-height:1.6; color:#1A1A1A;">
 							Hi <%= @user.first_name.presence || "there" %>,
 						</p>
-						<p style="margin:0; font-size:15px; line-height:1.6; color:#1A1A1A;">
-							Thanks for creating a <%= UserMailer::BRAND_NAME %> account. Here's what's waiting for you:
+						<p style="margin:0; font-size:14px; line-height:1.6; color:#6B6560;">
+							Gmail clipping demo: this message repeats the list below
+							<%= @block_count %> times so the HTML part crosses Gmail's ~102KB
+							(104,448 byte) clipping limit. In a real Gmail inbox, everything past
+							that point is replaced with "[Message clipped] View entire message,"
+							and the "Log in" button below won't render until the reader clicks
+							through.
 						</p>
 					</td>
 				</tr>
 
 				<tr>
 					<td class="mobile-pad" style="padding:8px 0;">
-						<%= render "feature_list", features: UserMailer::FEATURES %>
+						<% @block_count.times do %>
+							<%= render "feature_list", features: UserMailer::FEATURES.first(3) %>
+						<% end %>
 					</td>
 				</tr>
 

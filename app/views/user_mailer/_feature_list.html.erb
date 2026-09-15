@@ -1,0 +1,15 @@
+<% features.each_slice(3) do |row| %>
+	<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #E8E4DC;">
+		<tr>
+			<% row.each do |feature| %>
+				<td width="33.33%" valign="top" style="padding:16px 16px 16px 0;">
+					<img border="0" vspace="0" hspace="0"
+							src="https://png.pngtree.com/png-vector/20221125/ourmid/pngtree-no-image-available-icon-flatvector-illustration-picture-coming-creative-vector-png-image_40968940.jpg"
+							alt="Icon Road Tax" width="64px"/>
+					<p style="margin:0 0 4px; font-size:13px; font-weight:600; color:#1A1A1A;"><%= feature[:title] %></p>
+					<p style="margin:0; font-size:12px; line-height:1.5; color:#6B6560;"><%= feature[:description] %></p>
+				</td>
+			<% end %>
+		</tr>
+	</table>
+<% end %>
