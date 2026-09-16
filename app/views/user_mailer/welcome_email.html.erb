@@ -1,5 +1,5 @@
 <span style="display:none; font-size:1px; color:#F7F5F1; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden;">
-	Thanks for creating a <%= UserMailer::BRAND_NAME %> account.
+	Thanks for creating a <%= UserMailer::NAME %> account.
 </span>
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F7F5F1;">
@@ -9,7 +9,7 @@
 
 				<tr>
 					<td style="padding-bottom:24px; border-bottom:2px solid #A6402F;">
-						<span style="font-size:16px; font-weight:700; letter-spacing:0.02em; color:#1A1A1A;"><%= UserMailer::BRAND_NAME %></span>
+						<span style="font-size:16px; font-weight:700; letter-spacing:0.02em; color:#1A1A1A;"><%= UserMailer::NAME %></span>
 					</td>
 				</tr>
 
@@ -19,37 +19,14 @@
 							Hi <%= @user.first_name.presence || "there" %>,
 						</p>
 						<p style="margin:0; font-size:15px; line-height:1.6; color:#1A1A1A;">
-							Thanks for creating a <%= UserMailer::BRAND_NAME %> account. Here's what's waiting for you:
+							Thanks for creating a <%= UserMailer::NAME %> account. Here's what's waiting for you:
 						</p>
 					</td>
 				</tr>
 
 				<tr>
 					<td class="mobile-pad" style="padding:8px 0;">
-						<%= render "feature_list", features: UserMailer::FEATURES %>
-					</td>
-				</tr>
-
-				<tr>
-					<td class="mobile-pad" style="padding:28px 0 8px;">
-						<table role="presentation" cellpadding="0" cellspacing="0" border="0">
-							<tr>
-								<td style="background-color:#A6402F;">
-									<a href="<%= @url %>" style="display:inline-block; padding:11px 24px; font-size:14px; font-weight:600; color:#FFFFFF;">
-										Log in
-									</a>
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-
-				<tr>
-					<td class="mobile-pad" style="padding:32px 0 0;">
-						<p style="margin:0; font-size:12px; color:#9A9488; line-height:1.6;">
-							You're getting this email because you signed up for <%= UserMailer::BRAND_NAME %>.
-							<a href="#" style="color:#9A9488; text-decoration:underline;">Unsubscribe</a>
-						</p>
+						<%= render "feature_list", features: @books %>
 					</td>
 				</tr>
 
