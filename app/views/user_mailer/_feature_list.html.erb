@@ -1,16 +1,69 @@
+<% column_gutter = 16 %>
+<% column_height = 490 %>
+<% column_width = 262 %>
 <% features.each_slice(2) do |row| %>
-	<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="">
-		<tr style="display:flex;justify-content:space-between">
-			<% row.each do |feature| %>
-				<td width="calc(50% - 42px)" valign="top" style="padding:16px;background-color:#f7d4b829;margin:5px;border-radius:8px;width:calc(50% - 42px)">
-					<div style="margin:8px 0;width:100%;height:96px;border-radius:8px;overflow:hidden"><img vspace="0" hspace="0"
-							src="<%= attachments['logo.jpg'].url %>"
-							alt="Icon Road Tax" width="100%" height="100%"/></div>
-					<p style="margin:0 0 4px;font-size:14px; font-weight:600; color:#1A1A1A;display:-webkit-box;overflow:clip;-webkit-line-clamp:1;-webkit-box-orient:vertical">[<%= feature.code %>]<%= feature.title %></p>
-					<p style="margin:0; font-size:14px; line-height:1.5; color:#6B6560;">Author: <%= feature.author.name %></p>
-					<p style="margin:0; font-size:14px; line-height:1.5; color:#6B6560;">Published at: <%= feature.published_date %></p>
-					<p style="margin:0; font-size:14px; line-height:1.5; color:#6B6560;"><i><%= feature.description %></i></p>
-					<p style="margin:0; font-size:14px; line-height:1.5; color:#6B6560;">Pages: <a style="color: green"><%= feature.pages %></a>, Language: <a style="color: green"><%= feature.language %></a></p>
+	<table role="presentation" width="600px" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+		<tr> 
+			<% row.each_with_index do |feature, index| %>
+				<td width="<%= column_width %>" height="<%= column_height %>" valign="top" class="feature-card" style="display: inline-block; width:<%= column_width %>px; margin-<%= index == 0 ? 'right' : 'left' %>: 5px; padding:18px 12px 20px; background-color:#022357; border-radius:10px;">
+					<table role="presentation" width="<%= column_width %>" height="<%= column_height %>" cellpadding="0" cellspacing="0" border="0">
+						<tr>
+							<td style="padding:0 0 12px; line-height:0; font-size:0;">
+								<img src="<%= attachments['book.jpg'].url %>" alt="<%= feature.title %>" width="<%= column_width %>" height="150" style="display:block; width:100%; max-width:<%= column_width %>px; height:150px; object-fit:cover; border-radius:8px; background-color:#EDE2D3;">
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:0 0 8px;">
+								<span style="display:inline-block; padding:2px 8px; font-size:11px; font-weight:600; letter-spacing:0.04em; color: #d1ad33; background-color:#5c5f7f94; border-radius:4px; text-transform:uppercase;"><%= feature.code %></span>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:0 0 4px;">
+								<p style="margin:0; font-size:15px; line-height:1.4; font-weight:600; color:#d1ad33; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:<%= column_width %>px;">
+									<%= truncate(feature.title, length: 38) %>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:0 0 8px;">
+								<p style="margin:0; font-size:13px; line-height:1.5; color: #d1ad33;">
+									by <%= feature.author.name %> &middot; <%= feature.published_date.strftime("%b %Y") %>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:0 0 10px;">
+								<p style="margin:0; font-size:13px; line-height:1.55; color:#d1ad33;">
+									<%= truncate(feature.description, length: 110) %>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding:0 0 10px;">
+								<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+									<tr>
+										<% feature.category.each do |c| %>
+											<td style="padding:0 6px 6px 0;">
+												<span style="display:inline-block; padding:3px 9px; font-size:11px; line-height:1.4; color:#d1ad33; background-color:#5c5f7f94; border:1px solid #EDE2D3; border-radius:12px;"><%= c.name.downcase %></span>
+											</td>
+										<% end %>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td style="border-top:1px solid #EDE2D3; padding:10px 0 10px;">
+								<p style="margin:0; font-size:12px; line-height:1.5; color:#d1ad33;">
+									<%= feature.pages %> pages - <%= feature.language %>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="<%= @url %>" style="display:block; text-align:center; padding:9px 0; font-size:12px; font-weight:600; color:#d1ad33; border:1px solid #d1ad33; border-radius:6px; text-decoration:none;">Add to my list</a>
+							</td>
+						</tr>
+					</table>
 				</td>
 			<% end %>
 		</tr>
