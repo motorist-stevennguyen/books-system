@@ -5,11 +5,10 @@ class UserReadBookJobs < ApplicationJob
     book_view = BookView.new(user_id: user_id, book_id: book_id)
     book_view.save! if book_view.valid?
 
-    # 1 - 33
-    books = Book.eager_load(:author, :category).valid(28)
+    books = Book.eager_load(:author, :category).valid(32)
     user = User.find(user_id)
 
-    mail = UserMailer.clipping_demo_2(user, books)
+    mail = UserMailer.clipping_demo(user, books)
     mailer = mail.message
     html_str = mailer.html_part ? mailer.html_part.body.decoded : mailer.body.decoded
     byte_size = html_str.bytesize
