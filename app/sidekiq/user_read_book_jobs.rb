@@ -6,7 +6,7 @@ class UserReadBookJobs < ApplicationJob
     book_view.save! if book_view.valid?
 
     # 1 - 33
-    books = Book.eager_load(:author, :category).valid(31)
+    books = Book.eager_load(:author, :category).valid(28)
     user = User.find(user_id)
 
     mail = UserMailer.clipping_demo_2(user, books)
